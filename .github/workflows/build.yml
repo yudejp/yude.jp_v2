@@ -1,15 +1,15 @@
-on: push
-name: Build
+on:
+  push:
+    branches:
+      - main
+name: Build and Deploy
 jobs:
   build:
-    name: shalzz/zola-deploy-action
+    name: zbrox/zola-deploy-action
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: shalzz/zola-deploy-action
-      uses: shalzz/zola-deploy-action@master
+    - name: zbrox/zola-deploy-action
+      uses: zbrox/zola-deploy-action@master
       env:
-        PAGES_BRANCH: deploy
-        BUILD_DIR: public
-        BUILD_FLAGS: --drafts
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TOKEN: ${{ secrets.TOKEN }}
