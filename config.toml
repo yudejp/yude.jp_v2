@@ -106,7 +106,6 @@ main_menu = [
               {url="/services/", name="サービス"},
               {url="https://github.com/yudejp", name="GitHub Organization", external=true},
               {url="https://discord.gg/X6srY7X", name="Discord サーバー", external=true},
-              {url="https://wiki.yude.jp", name="Wiki", external=true},
 ]
 
 # Displayed as title of drop-down menu when size of main_menu > show_menu_items.
