@@ -1,0 +1,15 @@
+on: push
+name: Build
+jobs:
+  build:
+    name: shalzz/zola-deploy-action
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: shalzz/zola-deploy-action
+      uses: shalzz/zola-deploy-action@master
+      env:
+        PAGES_BRANCH: deploy
+        BUILD_DIR: docs
+        BUILD_FLAGS: --drafts
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
