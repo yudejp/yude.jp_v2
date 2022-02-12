@@ -2,6 +2,8 @@
 title = "プロフィール"
 path = "profile"
 
+[extra]
+date = 2022-02-12
 +++
 # yude
 <img src="/images/avatar.jpg" style="max-width: 200px" />

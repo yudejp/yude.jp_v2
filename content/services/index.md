@@ -2,6 +2,8 @@
 title = "サービス"
 path = "services"
 
+[extra]
+date = 2022-02-12
 +++
 以下に yude.jp で稼働中の公開サービスを示します。
 
