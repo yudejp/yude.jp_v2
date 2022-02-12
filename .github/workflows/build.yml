@@ -10,6 +10,6 @@ jobs:
       uses: shalzz/zola-deploy-action@master
       env:
         PAGES_BRANCH: deploy
-        BUILD_DIR: docs
+        BUILD_DIR: public
         BUILD_FLAGS: --drafts
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
