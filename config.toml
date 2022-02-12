@@ -83,7 +83,7 @@ full_width = false
 center = false
 
 # set a custom favicon. Must be placed in root of static/ directory...
-# favicon = ""
+favicon = "/images/favicon.ico"
 
 
 # Set a custom preview image for your website when posted as a link.
