@@ -1,0 +1,20 @@
++++
+title="サイトを移行しました。"
+description="yude.jp を構成するフレームワークを変更しました。"
+date=2022-02-12
+
+[taxonomies]
+tags = ["zola"]
+categories = ["technology"]
++++
+
+2021年3月頃から yude.jp では Next.js + Tailwind CSS でサイトを構成してきましたが、機能を縮小するにあたりこの構成はリッチすぎる状態であったことと、Node.js のエコシステムに疲れてしまったことから、今回 Rust 製の SSG フレームワークである Zola に移行しました。\
+現在の構成は以下のとおりです。
+
+* Zola のテーマ: [zerm](https://github.com/ejmg/zerm)
+* Zola のビルド: GitHub Actions
+* Web サイトのデプロイ先: Cloudflare Pages
+
+当初、Zola のビルドとデプロイを両方とも Cloudflare Pages で行おうとしていましたが、zerm のテーマを使用した状態ではどうしてもビルドが通らず (`styles.css` が見つからない 等の前代未聞のエラーが発生...)、仕方なく GitHub Actions で gh-pages ブランチにビルドしたものを Cloudflare Pages にアップロードしています。ええ...
+
+よろしゅう。
