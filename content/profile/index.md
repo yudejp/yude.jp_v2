@@ -23,6 +23,9 @@ date = 2022-02-12
 
 その他のアカウントについては、[こちら](https://scrapbox.io/yude/%E3%82%A2%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88)を御覧ください。
 
+## リンク
+* Scrapbox: [油田](https://scrapbox.io/yude)
+
 ## 公開鍵
 * [GnuPG](https://github.com/yude.gpg)
 * [SSH](https://github.com/yude.keys)
