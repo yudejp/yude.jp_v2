@@ -16,4 +16,4 @@ path = "mutual-links"
 
 ## yude.jp をリンクしてくださる方へ
 ありがとうございます! 以下のバナーをご利用ください。
-[![yude.jp](/images/banner_new.png)](https://nona-takahara.github.io/)
+[![yude.jp](/images/banner_new.png)](https://yude.jp/images/banner_new.png)
