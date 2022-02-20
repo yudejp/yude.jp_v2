@@ -91,7 +91,7 @@ favicon = "/images/favicon.ico"
 # og_preview_img = ""
 
 # Copyright notice if desired. Defaults to
-copyright = "Powered by Zola"
+# copyright = "Powered by Zola"
 
 # What is displayed in the top left corner of the website. Default is zerm.
 logo_text = "yude.jp"
