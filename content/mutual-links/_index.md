@@ -12,6 +12,8 @@ path = "mutual-links"
 * こーげんやさい
 [![こーげんやさい](/images/mutual-links/nona-takahara.png)](https://nona-takahara.github.io/)
 
+* [pepepperの雑記帳](https://pepepper.cf/)
+
 ## yude.jp をリンクしてくださる方へ
 ありがとうございます! 以下のバナーをご利用ください。
 [![yude.jp](/images/banner_new.png)](https://nona-takahara.github.io/)
