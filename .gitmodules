@@ -1,6 +1,6 @@
 [submodule "themes/zerm"]
 	path = themes/zerm
-	url = git@github.com:yude/zerm.git
+	url = git@github.com:yudejp/zerm.git
 [submodule "content"]
 	path = content
 	url = git@github.com:yudejp/yude.jp-content.git
