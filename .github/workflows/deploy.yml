@@ -5,9 +5,20 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: build_and_deploy
+      - uses: actions/checkout@v2
+      - name: Setup SSH
+        env:
+          CLONE_KEY: ${{ secrets.CLONE_KEY }}
+        run: |
+          mkdir -p /home/runner/.ssh/
+          echo -e "$CLONE_KEY" > /home/runner/.ssh/id_rsa
+          chmod 600 /home/runner/.ssh/id_rsa
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive
+      - name: Build and Deploy
         uses: shalzz/zola-deploy-action@v0.14.1
         env:
           # Target branch
