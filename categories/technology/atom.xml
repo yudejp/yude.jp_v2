@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ja">
+	<title>yude.jp - technology</title>
+	<subtitle>The front page of yude.jp</subtitle>
+	<link href="/categories/technology/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="/"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2022-07-25T00:00:00+00:00</updated>
+	<id>/categories/technology/atom.xml</id>
+	<entry xml:lang="ja">
+		<title>Mastodon インスタンスを高速に作成する</title>
+		<published>2022-07-25T00:00:00+00:00</published>
+		<updated>2022-07-25T00:00:00+00:00</updated>
+		<link href="/blog/2022-7-mastodon/" type="text/html"/>
+		<id>/blog/2022-7-mastodon/</id>
+		<content type="html">&lt;h1 id=&quot;mian-ze-zhu-yi-shi-xiang&quot;&gt;免責 &#x2F; 注意 事項&lt;a class=&quot;zola-anchor&quot; href=&quot;#mian-ze-zhu-yi-shi-xiang&quot; aria-label=&quot;Anchor link for: mian-ze-zhu-yi-shi-xiang&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;ul&gt;
+&lt;li&gt;yude はこの記事の内容をあなたが実行した結果の責任を一切負うことができません。自己責任で行ってください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;bi-yao-namono&quot;&gt;必要なもの&lt;a class=&quot;zola-anchor&quot; href=&quot;#bi-yao-namono&quot; aria-label=&quot;Anchor link for: bi-yao-namono&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Cloudflare で管理されている独自ドメイン&lt;&#x2F;li&gt;
+&lt;li&gt;Docker, cloudflared がインストールされているマシン
+&lt;ul&gt;
+&lt;li&gt;cloudflared のインストール方法については、この記事の最後の方を参照してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;shou-shun&quot;&gt;手順&lt;a class=&quot;zola-anchor&quot; href=&quot;#shou-shun&quot; aria-label=&quot;Anchor link for: shou-shun&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;1-tenpuretono-git-ripozitoriwokuronsimasu&quot;&gt;1. テンプレートの Git リポジトリをクローンします。&lt;a class=&quot;zola-anchor&quot; href=&quot;#1-tenpuretono-git-ripozitoriwokuronsimasu&quot; aria-label=&quot;Anchor link for: 1-tenpuretono-git-ripozitoriwokuronsimasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;yude が作成した人のぬくもりのあるテンプレート Git リポジトリをクローンします。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ git clone https:&amp;#x2F;&amp;#x2F;github.com&amp;#x2F;yude&amp;#x2F;docker-mastodon mastodon
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;2-cloudflare-ni-cloudflared-kararoguinsimasu&quot;&gt;2. Cloudflare に &lt;code&gt;cloudflared&lt;&#x2F;code&gt; からログインします。&lt;a class=&quot;zola-anchor&quot; href=&quot;#2-cloudflare-ni-cloudflared-kararoguinsimasu&quot; aria-label=&quot;Anchor link for: 2-cloudflare-ni-cloudflared-kararoguinsimasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;まず、不具合を防ぐために事前に Cloudflare のダッシュボードにログインしておきます。&lt;&#x2F;li&gt;
+&lt;li&gt;その後、以下のコマンドを実行すると、Cloudflare の認証ページへの URL が表示されます。
+&lt;ul&gt;
+&lt;li&gt;若干処理が長いため、気長に待ってください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ cloudflared login
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;Cloudflare の認証ページでは、あなたが Mastodon を公開する予定のドメインを指定してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;3-cloudflare-noshe-ding-woxing-imasu&quot;&gt;3. Cloudflare の設定を行います。&lt;a class=&quot;zola-anchor&quot; href=&quot;#3-cloudflare-noshe-ding-woxing-imasu&quot; aria-label=&quot;Anchor link for: 3-cloudflare-noshe-ding-woxing-imasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;トンネルを定義します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ cloudflare tunnel create mastodon
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mastodon&lt;&#x2F;code&gt; の部分は英数字で任意に設定できます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;ドメインとトンネルを紐付けます。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ cloudflare tunnel route dns mastodon mstdn.yude.jp
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mastodon&lt;&#x2F;code&gt; の部分はステップ 1 で定義したトンネル名を指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;mstdn.yude.jp&lt;&#x2F;code&gt; の部分は Mastodon を稼働させる予定のドメインを指定してください。 &lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;4-docker-kontenanoshe-ding-woxing-imasu&quot;&gt;4. Docker コンテナの設定を行います。&lt;a class=&quot;zola-anchor&quot; href=&quot;#4-docker-kontenanoshe-ding-woxing-imasu&quot; aria-label=&quot;Anchor link for: 4-docker-kontenanoshe-ding-woxing-imasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;p&gt;クローンしたリポジトリ内にある &lt;code&gt;docker-compose.yaml&lt;&#x2F;code&gt; を開き、必要な項目を設定していきます。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;サービス &lt;code&gt;cloudflared&lt;&#x2F;code&gt; の &lt;code&gt;command&lt;&#x2F;code&gt; の項にある &lt;code&gt;mastodon&lt;&#x2F;code&gt; の部分を、ステップ 4.1 で指定したトンネル名に変更してください。&lt;br &#x2F;&gt;
+例のとおりに &lt;code&gt;mastodon&lt;&#x2F;code&gt; とした場合は、何もする必要はありません。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;5-mastodon-noshe-ding-woxing-imasu&quot;&gt;5. Mastodon の設定を行います。&lt;a class=&quot;zola-anchor&quot; href=&quot;#5-mastodon-noshe-ding-woxing-imasu&quot; aria-label=&quot;Anchor link for: 5-mastodon-noshe-ding-woxing-imasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;まずは、設定ファイルのテンプレートをダウンロードします。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ wget -O .env.production https:&amp;#x2F;&amp;#x2F;raw.githubusercontent.com&amp;#x2F;mastodon&amp;#x2F;mastodon&amp;#x2F;main&amp;#x2F;.env.production.sample
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;.env.production&lt;&#x2F;code&gt; を開き、必要な項目を設定していきます。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;まずは、設定に使用するコマンドを2つ示します。これらは、両方とも &lt;code&gt;docker-compose.yaml&lt;&#x2F;code&gt; が存在するディレクトリで実行してください。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;コマンド1: &lt;code&gt;docker compose run --rm bundle exec web rake secret&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;コマンド2: &lt;code&gt;docker compose run --rm bundle exec web rake mastodon:webpush:generate_vapid_key&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;以下が &lt;code&gt;.env.production&lt;&#x2F;code&gt; 中の設定項目です。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LOCAL_DOMAIN&lt;&#x2F;code&gt;: Mastodon を稼働させる予定のドメイン (例: &lt;code&gt;mstdn.yude.jp&lt;&#x2F;code&gt;)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;REDIS_HOST&lt;&#x2F;code&gt;: &lt;code&gt;redis&lt;&#x2F;code&gt; に変更してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;DB_HOST&lt;&#x2F;code&gt;: &lt;code&gt;db&lt;&#x2F;code&gt; に変更してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;ES_ENABLED&lt;&#x2F;code&gt;: 今回は &lt;code&gt;false&lt;&#x2F;code&gt; に変更してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SECRET_KEY_BASE&lt;&#x2F;code&gt;: &lt;strong&gt;コマンド1&lt;&#x2F;strong&gt;を実行して得られた文字列を貼り付けてください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;OTP_SECRET&lt;&#x2F;code&gt;: &lt;strong&gt;コマンド1&lt;&#x2F;strong&gt;を実行して得られた文字列を貼り付けてください。ただし、&lt;code&gt;SECRET_KEY_BASE&lt;&#x2F;code&gt; とは異なる文字列になるようにしてください。(2回生成コマンドを実行してください。)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;VAPID_PRIVATE_KEY&lt;&#x2F;code&gt; &amp;amp; &lt;code&gt;VAPID_PUBLIC_KEY&lt;&#x2F;code&gt;: &lt;strong&gt;コマンド2&lt;&#x2F;strong&gt;を実行して得られた文字列を貼り付けてください。コマンドを実行すると、そのまま貼り付けられる形式で結果を得られます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;以下の設定項目には、SMTP サーバ (電子メールの送信を担当するサーバ) が必要です。なんらかの手段によって、これを用意してください。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;SMTP_SERVER&lt;&#x2F;code&gt;: SMTP サーバのアドレスを指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_PORT&lt;&#x2F;code&gt;: SMTP サーバのポート番号を指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_LOGIN&lt;&#x2F;code&gt;: SMTP サーバのユーザ ID を指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_PASSWORD&lt;&#x2F;code&gt;: SMTP サーバのパスワードを指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_FROM_ADDRESS&lt;&#x2F;code&gt;: サーバーの利用者から、Mastodon インスタンスからのメールに付属するメールアドレスをどのように見せたいかを指定してください。(例: &lt;code&gt;noreply@yude.jp&lt;&#x2F;code&gt;)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;また、自分しか使用しない場合は、&lt;code&gt;.env.production&lt;&#x2F;code&gt; に以下を追記してください。&lt;pre&gt;&lt;code&gt;SINGLE_USER_MODE=true
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;アセットファイルとデータベースを初期化します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ docker compose run --rm web rails db:migrate
+$ docker compose run --rm web rails assets:precompile
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;6-qi-dong-simasu&quot;&gt;6. 起動します。&lt;a class=&quot;zola-anchor&quot; href=&quot;#6-qi-dong-simasu&quot; aria-label=&quot;Anchor link for: 6-qi-dong-simasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;pre&gt;&lt;code&gt;$ docker compose up -d
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;起動後、あなたのアカウントをできるだけ早く作成してください。&lt;&#x2F;li&gt;
+&lt;li&gt;起動したら、以下のコマンドであなたのアカウントを管理者に設定してください。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ docker exec -it $(docker compose ps -q web) bin&amp;#x2F;tootctl accounts modify your_name --role admin
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;your_name&lt;&#x2F;code&gt; にはあなたのスクリーンネームを指定します。(例: &lt;code&gt;@your_name&lt;&#x2F;code&gt; と表示されているものを、&lt;code&gt;your_name&lt;&#x2F;code&gt; として指定します。)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;can-kao-cloudflared-woinsutorusuru&quot;&gt;参考: cloudflared をインストールする&lt;a class=&quot;zola-anchor&quot; href=&quot;#can-kao-cloudflared-woinsutorusuru&quot; aria-label=&quot;Anchor link for: can-kao-cloudflared-woinsutorusuru&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Debian の場合
+&lt;ol&gt;
+&lt;li&gt;リポジトリを追加します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ echo &amp;quot;deb [signed-by=&amp;#x2F;usr&amp;#x2F;share&amp;#x2F;keyrings&amp;#x2F;cloudflare-main.gpg] https:&amp;#x2F;&amp;#x2F;pkg.cloudflare.com&amp;#x2F; buster main&amp;quot; | sudo tee &amp;#x2F;etc&amp;#x2F;apt&amp;#x2F;sources.list.d&amp;#x2F;cloudflare-main.list 
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;公開鍵を追加します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ sudo curl https:&amp;#x2F;&amp;#x2F;pkg.cloudflare.com&amp;#x2F;cloudflare-main.gpg -o &amp;#x2F;usr&amp;#x2F;share&amp;#x2F;keyrings&amp;#x2F;cloudflare-main.gpg
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;cloudflared&lt;&#x2F;code&gt; をインストールします。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ sudo apt update; sudo apt -y install cloudflared
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;その他のディストリビューションについては、&lt;a href=&quot;https:&#x2F;&#x2F;pkg.cloudflare.com&#x2F;&quot;&gt;こちら&lt;&#x2F;a&gt; を参照してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+	</entry>
+	<entry xml:lang="ja">
+		<title>Windows 11 と Arch Linux のデュアルブートを設定しました</title>
+		<published>2022-07-05T00:00:00+00:00</published>
+		<updated>2022-07-05T00:00:00+00:00</updated>
+		<link href="/blog/2022-7-install-arch-linux/" type="text/html"/>
+		<id>/blog/2022-7-install-arch-linux/</id>
+		<content type="html">&lt;h1 id=&quot;hazimeni&quot;&gt;はじめに&lt;a class=&quot;zola-anchor&quot; href=&quot;#hazimeni&quot; aria-label=&quot;Anchor link for: hazimeni&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;p&gt;2022年7月に &lt;a href=&quot;https:&#x2F;&#x2F;www.lenovo.com&#x2F;jp&#x2F;ja&#x2F;notebooks&#x2F;thinkpad&#x2F;e-series&#x2F;ThinkPad-E14-Gen-3-14%E2%80%9D-AMD&#x2F;p&#x2F;22TPE14E4A3&quot;&gt;Lenovo ThinkPad E14 Gen 3 (AMD)&lt;&#x2F;a&gt; を導入し、Windows 11 と Arch Linux のデュアルブートを設定しました。&lt;br &#x2F;&gt;
+この記事では、その方法を備忘録として公開します。&lt;br &#x2F;&gt;
+また、Windows 11 としていますが、UEFI でブートするように設定されている Windows 7 以上の Windows であれば問題なく実行できるはずです。&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;mian-ze-zhu-yi-shi-xiang&quot;&gt;免責 &#x2F; 注意 事項&lt;a class=&quot;zola-anchor&quot; href=&quot;#mian-ze-zhu-yi-shi-xiang&quot; aria-label=&quot;Anchor link for: mian-ze-zhu-yi-shi-xiang&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;ul&gt;
+&lt;li&gt;yude はこの記事の内容をあなたが実行した結果の責任を一切負うことができません。自己責任で行ってください。
+&lt;ul&gt;
+&lt;li&gt;Arch Linux, Gentoo Linux, Linux From Scratch などのソースベースの Linux ディストリビューションをインストールしたことがないレベルの初学者の方は、本番環境のコンピュータで行うことを全く推奨しません。パーティションテーブルを破壊しても問題のないコンピュータで実行してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;操作を行う前に、必要なデータをバックアップしてください。また、インストール前に、できるだけ関係のないストレージをコンピュータから取り外しておくことを推奨します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;yong-yi&quot;&gt;用意&lt;a class=&quot;zola-anchor&quot; href=&quot;#yong-yi&quot; aria-label=&quot;Anchor link for: yong-yi&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;p&gt;インストールする前に、コンピュータが条件を満たしていることを確認します。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;UEFI に対応していること。2012 年以降に製造されたコンピュータであれば、大抵問題ありません。&lt;&#x2F;li&gt;
+&lt;li&gt;デスクトップ環境を導入する場合は 2 GB 以上のメモリ。そうでない場合は 512 MB。&lt;&#x2F;li&gt;
+&lt;li&gt;アーキテクチャが x86_64 であること。&lt;&#x2F;li&gt;
+&lt;li&gt;Apple の T2 チップ搭載 Mac 等、特殊なハードウェアでないこと。元々 Windows が稼働しているコンピュータであれば、大抵問題ありません。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;その他、&lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.jp&#x2F;index.php&#x2F;%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%82%AC%E3%82%A4%E3%83%89&quot;&gt;インストールガイド&lt;&#x2F;a&gt;に記載されている条件を満たしていることを確認してください。&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;shou-shun&quot;&gt;手順&lt;a class=&quot;zola-anchor&quot; href=&quot;#shou-shun&quot; aria-label=&quot;Anchor link for: shou-shun&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;buto-usb-nozhun-bei&quot;&gt;ブート USB の準備&lt;a class=&quot;zola-anchor&quot; href=&quot;#buto-usb-nozhun-bei&quot; aria-label=&quot;Anchor link for: buto-usb-nozhun-bei&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;まず、Arch Linux の最新の iso イメージファイルを&lt;a href=&quot;https:&#x2F;&#x2F;www.archlinux.jp&#x2F;download&#x2F;&quot;&gt;ダウンロード&lt;&#x2F;a&gt;してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;windows&quot;&gt;Windows&lt;a class=&quot;zola-anchor&quot; href=&quot;#windows&quot; aria-label=&quot;Anchor link for: windows&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;rufus.ie&#x2F;ja&#x2F;&quot;&gt;Rufus&lt;&#x2F;a&gt; または &lt;a href=&quot;https:&#x2F;&#x2F;www.balena.io&#x2F;etcher&#x2F;&quot;&gt;balenaEtcher&lt;&#x2F;a&gt; を使うのが楽です。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;macos&quot;&gt;macOS&lt;a class=&quot;zola-anchor&quot; href=&quot;#macos&quot; aria-label=&quot;Anchor link for: macos&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.balena.io&#x2F;etcher&#x2F;&quot;&gt;balenaEtcher&lt;&#x2F;a&gt; を使うのが楽です。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;linux&quot;&gt;Linux&lt;a class=&quot;zola-anchor&quot; href=&quot;#linux&quot; aria-label=&quot;Anchor link for: linux&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;dd&lt;&#x2F;code&gt; コマンドを使用して書き込みます。&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ sudo dd if=archiso.iso of=&amp;#x2F;dev&amp;#x2F;sdHoge bs=1M status=progress
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;archiso.iso&lt;&#x2F;code&gt; は iso イメージへのパス、&lt;code&gt;&#x2F;dev&#x2F;sdHoge&lt;&#x2F;code&gt; は USB フラッシュドライブのデバイスファイルに置き換えてください。
+&lt;ul&gt;
+&lt;li&gt;デバイスファイルは、&lt;code&gt;sudo fdisk -l&lt;&#x2F;code&gt; コマンド等で確認できます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;GUI が必要な場合は、先述の &lt;a href=&quot;https:&#x2F;&#x2F;www.balena.io&#x2F;etcher&#x2F;&quot;&gt;balenaEtcher&lt;&#x2F;a&gt; を使うこともできます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;konpiyutanozhun-bei&quot;&gt;コンピュータの準備&lt;a class=&quot;zola-anchor&quot; href=&quot;#konpiyutanozhun-bei&quot; aria-label=&quot;Anchor link for: konpiyutanozhun-bei&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;windows-noshe-ding&quot;&gt;Windows の設定&lt;a class=&quot;zola-anchor&quot; href=&quot;#windows-noshe-ding&quot; aria-label=&quot;Anchor link for: windows-noshe-ding&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;リアルタイムクロックを UTC 基準にします。
+&lt;ul&gt;
+&lt;li&gt;Windows は、既定の状態では時計の基準に現地時間を使いますが、これはデュアルブートにおいて相性が悪いです。&lt;&#x2F;li&gt;
+&lt;li&gt;以下のコマンドを管理者権限のあるターミナルで実行してください。&lt;pre&gt;&lt;code&gt;reg add &amp;quot;HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation&amp;quot; &amp;#x2F;v RealTimeIsUniversal &amp;#x2F;d 1 &amp;#x2F;t REG_DWORD &amp;#x2F;f
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;高速スタートアップとハイバネートを無効化します。
+&lt;ul&gt;
+&lt;li&gt;これにより、Windows を使用中に「休止状態」にすることができなくなりますが、Arch Linux の使用中に起きる可能性のある問題を避けることができます。&lt;&#x2F;li&gt;
+&lt;li&gt;「休止状態」を使用する必要がある場合は、代わりに高速スタートアップのみを無効化することができます。
+&lt;ul&gt;
+&lt;li&gt;方法については、以下のページをご覧ください:&lt;br &#x2F;&gt;
+&lt;a href=&quot;https:&#x2F;&#x2F;www.fmworld.net&#x2F;cs&#x2F;azbyclub&#x2F;qanavi&#x2F;jsp&#x2F;qacontents.jsp?PID=6010-9312&quot;&gt;富士通Q&amp;amp;A - [Windows 10] 高速スタートアップを無効にする方法を教えてください。 - FMVサポート : 富士通パソコン&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;高速スタートアップとハイバネートを無効化するには、以下のコマンドを管理者権限のあるターミナルで実行してください。&lt;pre&gt;&lt;code&gt;powercfg &amp;#x2F;h off
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;パーティションを準備します。
+&lt;ul&gt;
+&lt;li&gt;Windows と Arch Linux を同じストレージ デバイスにインストールする場合は、Windows が専有しているパーティションを縮小してください。
+&lt;ul&gt;
+&lt;li&gt;縮小する前に、ストレージに十分な空き容量を確保し、かつデフラグを行う必要がある場合もあります。&lt;&#x2F;li&gt;
+&lt;li&gt;方法については、以下のページをご覧ください:&lt;br &#x2F;&gt;
+&lt;a href=&quot;https:&#x2F;&#x2F;faq.nec-lavie.jp&#x2F;qasearch&#x2F;1007&#x2F;app&#x2F;servlet&#x2F;relatedqa?QID=020024&quot;&gt;NEC LAVIE公式サイト &amp;gt; サービス＆サポート &amp;gt; Q&amp;amp;A &amp;gt; Q&amp;amp;A番号 020024 「Windows 10で、Cドライブの容量を縮小して新しくドライブを作成する方法について教えてください。」&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;コンピュータに内蔵ストレージ デバイスが複数取り付けられており、物理的に異なるデバイスに Arch Linux をインストールする場合は、「ディスクの管理」から事前にパーティションを初期化しておいてください。
+&lt;ul&gt;
+&lt;li&gt;手順は以下のページを参考にしてください:&lt;br &#x2F;&gt;
+&lt;a href=&quot;https:&#x2F;&#x2F;docs.microsoft.com&#x2F;ja-jp&#x2F;windows-server&#x2F;storage&#x2F;disk-management&#x2F;initialize-new-disks&quot;&gt;新しいディスクの初期化 | Microsoft Docs&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;パーティションの種類については、&lt;strong&gt;GPT&lt;&#x2F;strong&gt; を選択してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;Windows の設定を完了したら、次は UEFI の設定を行います。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;uefi-noshe-ding&quot;&gt;UEFI の設定&lt;a class=&quot;zola-anchor&quot; href=&quot;#uefi-noshe-ding&quot; aria-label=&quot;Anchor link for: uefi-noshe-ding&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;操作手順はコンピュータに搭載されている UEFI によって異なるため、ここでは手順を記載せず、達成するべき目標のみを記述します。
+&lt;ul&gt;
+&lt;li&gt;セキュアブートを無効化してください。&lt;&#x2F;li&gt;
+&lt;li&gt;ファストブートをできるだけ無効化してください。&lt;&#x2F;li&gt;
+&lt;li&gt;ブート元デバイスの順番を調節し、USB フラッシュドライブが最初に読み込まれるようにしてください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;arch-linux-noji-ben-de-nainsutoru&quot;&gt;Arch Linux の基本的なインストール&lt;a class=&quot;zola-anchor&quot; href=&quot;#arch-linux-noji-ben-de-nainsutoru&quot; aria-label=&quot;Anchor link for: arch-linux-noji-ben-de-nainsutoru&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;p&gt;いよいよ、Arch Linux をストレージにインストールします。&lt;br &#x2F;&gt;
+まずは、iso イメージを書き込んだ USB フラッシュドライブから Arch Linux をブートしてください。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shou-shun-1&quot;&gt;手順&lt;a class=&quot;zola-anchor&quot; href=&quot;#shou-shun-1&quot; aria-label=&quot;Anchor link for: shou-shun-1&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;1-kimatupuwoshe-ding-simasu&quot;&gt;1. キーマップを設定します。&lt;a class=&quot;zola-anchor&quot; href=&quot;#1-kimatupuwoshe-ding-simasu&quot; aria-label=&quot;Anchor link for: 1-kimatupuwoshe-ding-simasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;日本語のキーボードを使用している場合は、以下のコマンドを実行します。&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ loadkeys jp106
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;英字のキーボードを使用している場合は、手順をスキップしてください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;2-intanetutonijie-sok-simasu&quot;&gt;2. インターネットに接続します。&lt;a class=&quot;zola-anchor&quot; href=&quot;#2-intanetutonijie-sok-simasu&quot; aria-label=&quot;Anchor link for: 2-intanetutonijie-sok-simasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;有線で接続する場合&lt;br &#x2F;&gt;
+LAN ケーブルをコンピュータに接続してください。&lt;&#x2F;li&gt;
+&lt;li&gt;Wi-Fi で接続する場合&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;iwctl&lt;&#x2F;code&gt; コマンドを実行します。プロンプトが &lt;code&gt;[iwd]#&lt;&#x2F;code&gt; に変化したことを確認してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;device list&lt;&#x2F;code&gt; で無線 LAN アダプターの一覧を表示します。&lt;br &#x2F;&gt;
+&lt;code&gt;Name&lt;&#x2F;code&gt; の列に表示されているものを覚えるか、メモしてください。通常 &lt;code&gt;wlan0&lt;&#x2F;code&gt; などが該当します。&lt;br &#x2F;&gt;
+これはデバイス名で、ステップ 3 以降で使用します。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;station デバイス名 scan&lt;&#x2F;code&gt; で Wi-Fi ネットワークをスキャンします。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;station デバイス名 get-networks&lt;&#x2F;code&gt; で近隣にあるアクセスポイントの SSID を確認します。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;station デバイス名 connect 目的の SSID&lt;&#x2F;code&gt; でアクセスポイントに接続します。
+コマンドの実行後、パスワードを求められますから入力してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;exit&lt;&#x2F;code&gt; で iwctl から抜けます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h4 id=&quot;3-shi-ji-wodiao-jie-simasu&quot;&gt;3. 時計を調節します。&lt;a class=&quot;zola-anchor&quot; href=&quot;#3-shi-ji-wodiao-jie-simasu&quot; aria-label=&quot;Anchor link for: 3-shi-ji-wodiao-jie-simasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;NTP サーバから正しい時刻を取得します。&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ timedatectl set-ntp true
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;4-pateisiyonwochu-qi-hua-simasu&quot;&gt;4. パーティションを初期化します。&lt;a class=&quot;zola-anchor&quot; href=&quot;#4-pateisiyonwochu-qi-hua-simasu&quot; aria-label=&quot;Anchor link for: 4-pateisiyonwochu-qi-hua-simasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h4&gt;
+&lt;ol&gt;
+&lt;li&gt;目的のパーティションのデバイスファイルの場所を確認します。&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ fdisk -l
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;デバイス の列に表示されているものが、デバイスファイルの場所です。&lt;br &#x2F;&gt;
+いくつか表示されているもののうち、次に該当するものをメモしておきます。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;タイプが &amp;quot;EFI システム&amp;quot; となっているもの。&lt;&#x2F;li&gt;
+&lt;li&gt;Arch Linux をインストールする先のパーティション
+&lt;ul&gt;
+&lt;li&gt;「Windows の設定」で用意したパーティションのデバイス ファイルをメモしてください。&lt;&#x2F;li&gt;
+&lt;li&gt;明確なラベル等は表示されないため、パーティションの順序・大きさ等から目的のパーティションを特定してください。
+&lt;ul&gt;
+&lt;li&gt;もしくは、一時的にマウントして目的のパーティションであるかどうかを確認できます:&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;# NTFS のパーティションをマウントするために必要
+$ pacman -S ntfs-3g
+# マウントする
+## ここでエラーが発生するとき、「パーティションの中身を表示する」をスキップしてください。
+## エラーが発生する場合は、この手順で目的のパーティションであるかどうかを特定することは危険です。
+$ mount --mkdir [パーティションのデバイス ファイルの場所] &amp;#x2F;tmp&amp;#x2F;hogepart
+# パーティションの中身を表示する
+$ ls &amp;#x2F;tmp&amp;#x2F;hogepart
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;Arch Linux をインストールするパーティションを ext4 でフォーマットします。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;ext4 は Linux において最も一般的なファイルシステムです。&lt;&#x2F;li&gt;
+&lt;li&gt;次のコマンドでフォーマットできます:&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ mkfs.ext4 [ステップ 1 で確認したデバイスファイルのパス]
+# 例: mkfs.ext4 &amp;#x2F;dev&amp;#x2F;sda2 または mkfs.ext4 &amp;#x2F;dev&amp;#x2F;nvme1n1p2 など。
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;5-bi-yao-napateisiyonwomauntosimasu&quot;&gt;5. 必要なパーティションをマウントします。&lt;a class=&quot;zola-anchor&quot; href=&quot;#5-bi-yao-napateisiyonwomauntosimasu&quot; aria-label=&quot;Anchor link for: 5-bi-yao-napateisiyonwomauntosimasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;マウントとは、ストレージ デバイスの中にある特定のパーティションと、自分が現在アクセスできる何らかのディレクトリを関連付ける操作のことをいいます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol&gt;
+&lt;li&gt;Linux のインストール先のパーティションをマウントします。&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ mount [ステップ 1 で確認したデバイスファイルのパス] &amp;#x2F;mnt
+# 例: mount &amp;#x2F;dev&amp;#x2F;sda2 &amp;#x2F;mnt または mount &amp;#x2F;dev&amp;#x2F;nvme1n1p2 &amp;#x2F;mnt など。
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;EFI パーティションをマウントします。&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ mount --mkdir [ステップ 1 で確認したデバイスファイルのパス] &amp;#x2F;mnt&amp;#x2F;boot
+# 例: mount &amp;#x2F;dev&amp;#x2F;sda1 &amp;#x2F;mnt または mount &amp;#x2F;dev&amp;#x2F;nvme1n1p0 &amp;#x2F;mnt など。
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;6-ji-ben-de-na-linux-sisutemunoinsutoru&quot;&gt;6. 基本的な Linux システムのインストール&lt;a class=&quot;zola-anchor&quot; href=&quot;#6-ji-ben-de-na-linux-sisutemunoinsutoru&quot; aria-label=&quot;Anchor link for: 6-ji-ben-de-na-linux-sisutemunoinsutoru&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;p&gt;Arch Linux の基本的な内容をインストールするには、&lt;code&gt;pacstrap&lt;&#x2F;code&gt; コマンドを使用します。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;実用的な Linux システムをインストールするには、次のように実行します。&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ pacstrap &amp;#x2F;mnt base base-devel linux linux-firmware nano neofetch sudo networkmanager git grep refind intel-ucode bash-completion
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;pacstrap&lt;&#x2F;code&gt; の説明
+&lt;ul&gt;
+&lt;li&gt;第1引数には、Linux をインストールするパーティションのマウント先を指定します。&lt;&#x2F;li&gt;
+&lt;li&gt;第2引数以降には、Linux システムを初期化するとともにインストールしたいパッケージを列挙します。
+&lt;ul&gt;
+&lt;li&gt;基本的には、例示されているパッケージを削らないでください。これからのステップでは、これらのパッケージがインストール済みであることを前提に進むからです。&lt;&#x2F;li&gt;
+&lt;li&gt;パッケージの説明 (一部省略)
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;base&lt;&#x2F;code&gt;, &lt;code&gt;linux&lt;&#x2F;code&gt;, &lt;code&gt;linux-firmware&lt;&#x2F;code&gt;: Arch Linux を構成する基本的なパッケージ &#x2F; グループで、必須です。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;base-devel&lt;&#x2F;code&gt;: パッケージをビルドしたりするための開発用ツールの集合です。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;nano&lt;&#x2F;code&gt;: CLI で使えるテキストエディタです。&lt;code&gt;vim&lt;&#x2F;code&gt; などに置き換えることができます。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;neofetch&lt;&#x2F;code&gt;: システムの概要を表示します。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;sudo&lt;&#x2F;code&gt;: 一時的にユーザーに特権を許します。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;networkmanager&lt;&#x2F;code&gt;: ネットワークへの接続を司ります。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;git&lt;&#x2F;code&gt;: バージョン管理システム Git のクライアントです。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;intel-ucode&lt;&#x2F;code&gt;: Intel 製 CPU のマイクロコードです。CPU がリリースされた後に発見されたバグなどを修正します。(&lt;strong&gt;AMD 製 CPU をお使いの方は、代わりに &lt;code&gt;amd-ucode&lt;&#x2F;code&gt; をインストールしてください。&lt;&#x2F;strong&gt;)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;7-insutorusita-arch-linux-woshe-ding-simasu&quot;&gt;7. インストールした Arch Linux を設定します。&lt;a class=&quot;zola-anchor&quot; href=&quot;#7-insutorusita-arch-linux-woshe-ding-simasu&quot; aria-label=&quot;Anchor link for: 7-insutorusita-arch-linux-woshe-ding-simasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;fstab を生成します。
+&lt;code&gt;&#x2F;etc&#x2F;fstab&lt;&#x2F;code&gt; というファイルがあり、ここには Linux システムがどのパーティションを起動時等にどこにマウントすべきかを記述します。&lt;br &#x2F;&gt;
+以下のコマンドで、自動的に生成できます。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ genfstab -U &amp;#x2F;mnt &amp;gt;&amp;gt; &amp;#x2F;mnt&amp;#x2F;etc&amp;#x2F;fstab
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;chroot でインストールした Linux システムに憑依します。
+インストールしたシステムに入り込んで、詳細な設定を行います。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ arch-chroot &amp;#x2F;mnt
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;タイムゾーンを設定します。
+以下のコマンドを実行して、タイムゾーンを設定します。日本にお住まいの場合は以下のコマンドを実行してください。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ sudo timedatectl set-timezone Asia&amp;#x2F;Tokyo
+$ hwclock --systohc
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;国際化
+Linux システムに日本語を教えます。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;&#x2F;etc&#x2F;locale.gen&lt;&#x2F;code&gt; を &lt;code&gt;nano&lt;&#x2F;code&gt; などのテキストエディタで開き、以下の内容に該当する行のコメントアウトを解除してください。&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;en_US.UTF-8
+ja_JP.UTF-8
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;以下のコマンドを実行して、キーマップを設定します。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ localectl set-keymap jp106
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;以下のコマンドを実行して、言語ファイルを生成します。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ locale-gen
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;コンピュータのホスト名を設定します。
+英数字を用いて、コンピュータの名前を設定してください。ただし、先頭に数字が来ないようにしてください。&lt;br &#x2F;&gt;
+以下のコマンドを実行することで、設定できます。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ echo [コンピュータの名前] &amp;gt;&amp;gt; &amp;#x2F;etc&amp;#x2F;hostname
+# 例: echo &amp;quot;arch&amp;quot; &amp;gt;&amp;gt; &amp;#x2F;etc&amp;#x2F;hostname
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;コンピュータのアカウントを設定します。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;まず、root アカウントのパスワードを設定します。以下のコマンドを実行してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ passwd
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;次に、自分が普段使用するアカウントを作成し、パスワードを設定します。以下のコマンドを実行してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;# 以下の例では、自分のアカウントを wheel グループ (管理者) に所属させ、シェルに Bash を使うようにします。
+# 名前は、英数字で設定してください。
+$ useradd -m -G wheel -s &amp;#x2F;bin&amp;#x2F;bash 名前
+# パスワードを設定します。
+passwd 名前
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;wheel&lt;&#x2F;code&gt; グループが &lt;code&gt;sudo&lt;&#x2F;code&gt; コマンドを使用できるようにします。
+&lt;code&gt;sudo&lt;&#x2F;code&gt; の設定ファイルは、&lt;code&gt;EDITOR=nano visudo&lt;&#x2F;code&gt; コマンドを実行すると開けます。&lt;br &#x2F;&gt;
+以下の内容を、開いたテキストファイルに&lt;strong&gt;追記&lt;&#x2F;strong&gt;してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre&gt;&lt;code&gt;%wheel ALL=(ALL) ALL
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;必要なサービスの有効化
+普段使用するサービスを、Linux の起動時に同時に起動させるようにしておきます。&lt;br &#x2F;&gt;
+以下のコマンドを実行してください。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ sudo systemctl enable NetworkManager.service
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;8&quot;&gt;
+&lt;li&gt;ブートローダの設定
+Linux を呼び出すには、ブートローダーが必要です。今回は &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.jp&#x2F;index.php&#x2F;REFInd&quot;&gt;rEFInd&lt;&#x2F;a&gt; という優れたブートローダーを使用します。&lt;br &#x2F;&gt;
+以下に手順を示します。
+&lt;ol&gt;
+&lt;li&gt;以下のコマンドで、基本的なファイルを自動的に生成します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;$ refind-install
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;boot&#x2F;refind_linux.conf&lt;&#x2F;code&gt; を編集します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;作業前に、ファイルをバックアップしておきます。以下のコマンドを実行してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;cp &amp;#x2F;boot&amp;#x2F;refind_linux.conf &amp;#x2F;boot&amp;#x2F;refind_linux.conf.bak
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;以下のコマンドを実行して、rEFInd を設定します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;sh&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;echo &amp;quot;\&amp;quot;Boot with standard options\&amp;quot; \&amp;quot;root=UUID=$(blkid [Linux をインストールしたパーティションのデバイス ファイルの場所] -s UUID -o value) rootfstype=ext4 rw splash\&amp;quot;&amp;quot;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;9-ji-ben-de-nasetutoatupunowan-liao&quot;&gt;9. 基本的なセットアップの完了&lt;a class=&quot;zola-anchor&quot; href=&quot;#9-ji-ben-de-nasetutoatupunowan-liao&quot; aria-label=&quot;Anchor link for: 9-ji-ben-de-nasetutoatupunowan-liao&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h4&gt;
+&lt;p&gt;以上で、基本的なセットアップは完了したはずです。&lt;code&gt;exit&lt;&#x2F;code&gt; コマンドを実行して chroot から抜け、&lt;code&gt;reboot&lt;&#x2F;code&gt; で再起動します。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;起動しない場合
+&lt;ul&gt;
+&lt;li&gt;Windows が起動してしまう場合&lt;br &#x2F;&gt;
+UEFI の設定で、&lt;code&gt;rEFInd Boot Manager&lt;&#x2F;code&gt; の優先順位を最高にしてください。&lt;&#x2F;li&gt;
+&lt;li&gt;Emergency mode に入ってしまう場合&lt;br &#x2F;&gt;
+&lt;code&gt;refind_linux.conf&lt;&#x2F;code&gt; の記述が間違っています。もう一度手順を読み込み、やり直してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;10-arch-linux-nodesukutotupuhuan-jing-nodao-ru&quot;&gt;10. Arch Linux のデスクトップ環境の導入&lt;a class=&quot;zola-anchor&quot; href=&quot;#10-arch-linux-nodesukutotupuhuan-jing-nodao-ru&quot; aria-label=&quot;Anchor link for: 10-arch-linux-nodesukutotupuhuan-jing-nodao-ru&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;デスクトップ環境が必要ない場合、この手順を完全に飛ばすことができます。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;今回は、&lt;a href=&quot;https:&#x2F;&#x2F;kde.org&#x2F;plasma-desktop&#x2F;&quot;&gt;KDE Plasma&lt;&#x2F;a&gt; というデスクトップ環境を導入します。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;スクリーンショット
+&lt;img src=&quot;https:&#x2F;&#x2F;i.imgur.com&#x2F;xlxiPMR.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol&gt;
+&lt;li&gt;必要なパッケージをインストールします。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ sudo pacman -Syu plasma kde-applications sddm xorg adobe-source-han-sans-jp-fonts fcitx-im fcitx-configtool fcitx-mozc kcm-fcitx
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;SDDM が Arch Linux の起動時に自動的に立ち上がるようにします。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;SDDM は、X サーバのセッションを開始する役目を担います。&lt;&#x2F;li&gt;
+&lt;li&gt;以下のコマンドを実行して、自動起動を有効にします。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ sudo systemctl enable sddm
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;日本語入力の設定をします。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;ホームディレクトリ以下の &lt;code&gt;.xprofile&lt;&#x2F;code&gt; (正確なパス: &lt;code&gt;$HOME&#x2F;.xprofile&lt;&#x2F;code&gt;) に以下の内容を書き込んでください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre&gt;&lt;code&gt;export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=”@im=fcitx”
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;表示言語を日本語に設定し、キーボードレイアウトを設定します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ sudo localectl set-locale ja_JP.UTF-8
+$ sudo localectl set-x11-keymap jp
+
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;再起動し、Plasma を起動します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;6&quot;&gt;
+&lt;li&gt;Fcitx (日本語入力メソッド) が自動的に起動するようにします。また、入力メソッドとして登録します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;ここからのコマンドは、Konsole 等のターミナルエミュレータから実行するようにします。&lt;&#x2F;li&gt;
+&lt;li&gt;自動起動するには、以下のコマンドを実行します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ fcitx-autostart
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;Fcitx を入力メソッドの1つとして登録します。以下のコマンドを実行して表示された画面から、Mozc を追加します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ fcitx-configtool
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;7&quot;&gt;
+&lt;li&gt;もう一度再起動すると、すべての設定が完了します。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;11-zhong-warini&quot;&gt;11. 終わりに&lt;a class=&quot;zola-anchor&quot; href=&quot;#11-zhong-warini&quot; aria-label=&quot;Anchor link for: 11-zhong-warini&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;p&gt;内容の誤り、補足、誤字・脱字 等ございましたら、&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;yudejp&#x2F;yude.jp_v2&#x2F;issues&quot;&gt;こちら&lt;&#x2F;a&gt; までお願いします。&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="ja">
+		<title>サイトを移行しました。</title>
+		<published>2022-02-12T00:00:00+00:00</published>
+		<updated>2022-02-12T00:00:00+00:00</updated>
+		<link href="/blog/2022-2-site-migrated/" type="text/html"/>
+		<id>/blog/2022-2-site-migrated/</id>
+		<content type="html">&lt;p&gt;2021年3月頃から yude.jp では Next.js + Tailwind CSS でサイトを構成してきましたが、機能を縮小するにあたりこの構成は過剰だったことと、Node.js のエコシステムに疲れてしまったことから、今回 Rust 製の SSG フレームワークである Zola に移行しました。&lt;br &#x2F;&gt;
+現在の構成は以下のとおりです。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Zola のテーマ: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ejmg&#x2F;zerm&quot;&gt;zerm&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;del&gt;Zola のビルド: GitHub Actions&lt;&#x2F;del&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Zola のビルド, デプロイ: &lt;a href=&quot;https:&#x2F;&#x2F;pages.cloudflare.com&#x2F;&quot;&gt;Cloudflare Pages&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;del&gt;当初、Zola のビルドとデプロイを両方とも Cloudflare Pages で行おうとしていましたが、zerm のテーマを使用した状態ではどうしてもビルドが通らず (&lt;code&gt;styles.css&lt;&#x2F;code&gt; が見つからない 等の前代未聞のエラーが発生...)、仕方なく GitHub Actions で gh-pages ブランチにビルドしたものを Cloudflare Pages にアップロードしています。ええ...&lt;&#x2F;del&gt;
+➝ &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;yudejp&#x2F;yude.jp_v2&#x2F;commit&#x2F;3d45db22f91276112bca2ed1eeab27c4c16d7de1&quot;&gt;修正しました。&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;よろしゅう。&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>

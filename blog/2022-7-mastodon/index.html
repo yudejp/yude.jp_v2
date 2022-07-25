@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+    <title>Mastodon インスタンスを高速に作成する - yude.jp</title>
+    
+    
+<meta http-equiv="content-type"
+    content="text/html; charset=utf-8">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+<meta name="description"
+    content="The front page of yude.jp" />
+
+    <meta property="og:title" content="yude.jp -&nbsp;Mastodon インスタンスを高速に作成する" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="&#x2F;blog&#x2F;2022-7-mastodon&#x2F;"/>
+    <meta property="og:description" content="RTA in ゆでハウス: Create Mastodon instance"/>
+<link rel="stylesheet"
+    href="/style.css">
+<link rel="stylesheet"
+    href="/color/pink.css">
+<link rel="shortcut icon"
+    href="/images/favicon.ico"
+    type="image/x-icon" /><link rel="alternate"
+    type="application/atom+xml"
+    title="yude.jp RSS"
+    href="/atom.xml"></head>
+    <body>
+        <div class="container center">
+<header class="header">
+    <div class="header__inner">
+        <div class="header__logo">
+            <a href="&#x2F;">
+    <div class="logo">
+        yude.jp
+    </div>
+</a>
+        </div>
+        <div class="menu-trigger">menu</div>
+    </div>
+    
+    <nav class="menu">
+        <ul class="menu__inner menu__inner--desktop">
+            
+            
+                    <li>
+                        <a href="
+    
+        /profile
+    
+">プロフィール</a>
+                    </li>
+                
+                    <li>
+                        <a href="
+    
+        /services
+    
+">サービス</a>
+                    </li>
+                
+                    <li>
+                        <a href="
+    
+        /blog
+    
+">ブログ</a>
+                    </li>
+                <ul class="menu__sub-inner">
+                        <li class="menu__sub-inner-more-trigger">show more ▾</li>
+                        <ul class="menu__sub-inner-more hidden">
+                            
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;github.com&#x2F;yudejp
+    
+">GitHub Organization</a>
+        </li>
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;discord.gg&#x2F;X6srY7X
+    
+">Discord サーバー</a>
+        </li>
+        <li>
+            <a href="
+    
+        /mutual-links
+    
+">相互リンク</a>
+        </li>
+                        </ul>
+                    </ul>
+            </ul>
+
+        <ul class="menu__inner menu__inner--mobile">
+            
+        <li>
+            <a href="
+    
+        /profile
+    
+">プロフィール</a>
+        </li>
+        <li>
+            <a href="
+    
+        /services
+    
+">サービス</a>
+        </li>
+        <li>
+            <a href="
+    
+        /blog
+    
+">ブログ</a>
+        </li>
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;github.com&#x2F;yudejp
+    
+">GitHub Organization</a>
+        </li>
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;discord.gg&#x2F;X6srY7X
+    
+">Discord サーバー</a>
+        </li>
+        <li>
+            <a href="
+    
+        /mutual-links
+    
+">相互リンク</a>
+        </li>
+        </ul>
+    </nav>
+
+    </header>
+<div class="content"><article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="&#x2F;blog&#x2F;2022-7-mastodon&#x2F;">Mastodon インスタンスを高速に作成する</a>
+            </h1>
+            
+    <div class="post-meta">
+        <span class="post-date">2022.07.25
+                </span>
+
+        <span class="post-author"></span>
+
+        
+
+    
+    :: {<a href="/categories/technology/">technology</a>,
+            <a href="/categories/mastodon/">mastodon</a>,
+            <a href="/categories/docker/">docker</a>} 
+
+            
+    ::
+    #<a href="/tags/memo/">memo</a>
+        
+    
+            
+        
+    </div>
+
+        </header><h1 id="mian-ze-zhu-yi-shi-xiang">免責 / 注意 事項<a class="zola-anchor" href="#mian-ze-zhu-yi-shi-xiang" aria-label="Anchor link for: mian-ze-zhu-yi-shi-xiang">§</a>
+</h1>
+<ul>
+<li>yude はこの記事の内容をあなたが実行した結果の責任を一切負うことができません。自己責任で行ってください。</li>
+</ul>
+<h1 id="bi-yao-namono">必要なもの<a class="zola-anchor" href="#bi-yao-namono" aria-label="Anchor link for: bi-yao-namono">§</a>
+</h1>
+<ul>
+<li>Cloudflare で管理されている独自ドメイン</li>
+<li>Docker, cloudflared がインストールされているマシン
+<ul>
+<li>cloudflared のインストール方法については、この記事の最後の方を参照してください。</li>
+</ul>
+</li>
+</ul>
+<h1 id="shou-shun">手順<a class="zola-anchor" href="#shou-shun" aria-label="Anchor link for: shou-shun">§</a>
+</h1>
+<h2 id="1-tenpuretono-git-ripozitoriwokuronsimasu">1. テンプレートの Git リポジトリをクローンします。<a class="zola-anchor" href="#1-tenpuretono-git-ripozitoriwokuronsimasu" aria-label="Anchor link for: 1-tenpuretono-git-ripozitoriwokuronsimasu">§</a>
+</h2>
+<ul>
+<li>yude が作成した人のぬくもりのあるテンプレート Git リポジトリをクローンします。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ git clone https:&#x2F;&#x2F;github.com&#x2F;yude&#x2F;docker-mastodon mastodon
+</code></pre>
+</li>
+</ul>
+<h2 id="2-cloudflare-ni-cloudflared-kararoguinsimasu">2. Cloudflare に <code>cloudflared</code> からログインします。<a class="zola-anchor" href="#2-cloudflare-ni-cloudflared-kararoguinsimasu" aria-label="Anchor link for: 2-cloudflare-ni-cloudflared-kararoguinsimasu">§</a>
+</h2>
+<ul>
+<li>まず、不具合を防ぐために事前に Cloudflare のダッシュボードにログインしておきます。</li>
+<li>その後、以下のコマンドを実行すると、Cloudflare の認証ページへの URL が表示されます。
+<ul>
+<li>若干処理が長いため、気長に待ってください。</li>
+</ul>
+<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ cloudflared login
+</code></pre>
+</li>
+<li>Cloudflare の認証ページでは、あなたが Mastodon を公開する予定のドメインを指定してください。</li>
+</ul>
+<h2 id="3-cloudflare-noshe-ding-woxing-imasu">3. Cloudflare の設定を行います。<a class="zola-anchor" href="#3-cloudflare-noshe-ding-woxing-imasu" aria-label="Anchor link for: 3-cloudflare-noshe-ding-woxing-imasu">§</a>
+</h2>
+<ol>
+<li>トンネルを定義します。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ cloudflare tunnel create mastodon
+</code></pre>
+<ul>
+<li><code>mastodon</code> の部分は英数字で任意に設定できます。</li>
+</ul>
+</li>
+<li>ドメインとトンネルを紐付けます。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ cloudflare tunnel route dns mastodon mstdn.yude.jp
+</code></pre>
+<ul>
+<li><code>mastodon</code> の部分はステップ 1 で定義したトンネル名を指定してください。</li>
+<li><code>mstdn.yude.jp</code> の部分は Mastodon を稼働させる予定のドメインを指定してください。 </li>
+</ul>
+</li>
+</ol>
+<h2 id="4-docker-kontenanoshe-ding-woxing-imasu">4. Docker コンテナの設定を行います。<a class="zola-anchor" href="#4-docker-kontenanoshe-ding-woxing-imasu" aria-label="Anchor link for: 4-docker-kontenanoshe-ding-woxing-imasu">§</a>
+</h2>
+<p>クローンしたリポジトリ内にある <code>docker-compose.yaml</code> を開き、必要な項目を設定していきます。</p>
+<ul>
+<li>サービス <code>cloudflared</code> の <code>command</code> の項にある <code>mastodon</code> の部分を、ステップ 4.1 で指定したトンネル名に変更してください。<br />
+例のとおりに <code>mastodon</code> とした場合は、何もする必要はありません。</li>
+</ul>
+<h2 id="5-mastodon-noshe-ding-woxing-imasu">5. Mastodon の設定を行います。<a class="zola-anchor" href="#5-mastodon-noshe-ding-woxing-imasu" aria-label="Anchor link for: 5-mastodon-noshe-ding-woxing-imasu">§</a>
+</h2>
+<ol>
+<li>
+<p>まずは、設定ファイルのテンプレートをダウンロードします。</p>
+<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ wget -O .env.production https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;mastodon&#x2F;mastodon&#x2F;main&#x2F;.env.production.sample
+</code></pre>
+</li>
+<li>
+<p><code>.env.production</code> を開き、必要な項目を設定していきます。</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>まずは、設定に使用するコマンドを2つ示します。これらは、両方とも <code>docker-compose.yaml</code> が存在するディレクトリで実行してください。</p>
+<ul>
+<li>コマンド1: <code>docker compose run --rm bundle exec web rake secret</code></li>
+<li>コマンド2: <code>docker compose run --rm bundle exec web rake mastodon:webpush:generate_vapid_key</code></li>
+</ul>
+</li>
+<li>
+<p>以下が <code>.env.production</code> 中の設定項目です。</p>
+<ul>
+<li><code>LOCAL_DOMAIN</code>: Mastodon を稼働させる予定のドメイン (例: <code>mstdn.yude.jp</code>)</li>
+<li><code>REDIS_HOST</code>: <code>redis</code> に変更してください。</li>
+<li><code>DB_HOST</code>: <code>db</code> に変更してください。</li>
+<li><code>ES_ENABLED</code>: 今回は <code>false</code> に変更してください。</li>
+<li><code>SECRET_KEY_BASE</code>: <strong>コマンド1</strong>を実行して得られた文字列を貼り付けてください。</li>
+<li><code>OTP_SECRET</code>: <strong>コマンド1</strong>を実行して得られた文字列を貼り付けてください。ただし、<code>SECRET_KEY_BASE</code> とは異なる文字列になるようにしてください。(2回生成コマンドを実行してください。)</li>
+<li><code>VAPID_PRIVATE_KEY</code> &amp; <code>VAPID_PUBLIC_KEY</code>: <strong>コマンド2</strong>を実行して得られた文字列を貼り付けてください。コマンドを実行すると、そのまま貼り付けられる形式で結果を得られます。</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p>以下の設定項目には、SMTP サーバ (電子メールの送信を担当するサーバ) が必要です。なんらかの手段によって、これを用意してください。</p>
+<ul>
+<li><code>SMTP_SERVER</code>: SMTP サーバのアドレスを指定してください。</li>
+<li><code>SMTP_PORT</code>: SMTP サーバのポート番号を指定してください。</li>
+<li><code>SMTP_LOGIN</code>: SMTP サーバのユーザ ID を指定してください。</li>
+<li><code>SMTP_PASSWORD</code>: SMTP サーバのパスワードを指定してください。</li>
+<li><code>SMTP_FROM_ADDRESS</code>: サーバーの利用者から、Mastodon インスタンスからのメールに付属するメールアドレスをどのように見せたいかを指定してください。(例: <code>noreply@yude.jp</code>)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>また、自分しか使用しない場合は、<code>.env.production</code> に以下を追記してください。<pre><code>SINGLE_USER_MODE=true
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>アセットファイルとデータベースを初期化します。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ docker compose run --rm web rails db:migrate
+$ docker compose run --rm web rails assets:precompile
+</code></pre>
+</li>
+</ol>
+<h2 id="6-qi-dong-simasu">6. 起動します。<a class="zola-anchor" href="#6-qi-dong-simasu" aria-label="Anchor link for: 6-qi-dong-simasu">§</a>
+</h2>
+<pre><code>$ docker compose up -d
+</code></pre>
+<ul>
+<li>起動後、あなたのアカウントをできるだけ早く作成してください。</li>
+<li>起動したら、以下のコマンドであなたのアカウントを管理者に設定してください。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ docker exec -it $(docker compose ps -q web) bin&#x2F;tootctl accounts modify your_name --role admin
+</code></pre>
+<ul>
+<li><code>your_name</code> にはあなたのスクリーンネームを指定します。(例: <code>@your_name</code> と表示されているものを、<code>your_name</code> として指定します。)</li>
+</ul>
+</li>
+</ul>
+<h1 id="can-kao-cloudflared-woinsutorusuru">参考: cloudflared をインストールする<a class="zola-anchor" href="#can-kao-cloudflared-woinsutorusuru" aria-label="Anchor link for: can-kao-cloudflared-woinsutorusuru">§</a>
+</h1>
+<ul>
+<li>Debian の場合
+<ol>
+<li>リポジトリを追加します。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ echo &quot;deb [signed-by=&#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;cloudflare-main.gpg] https:&#x2F;&#x2F;pkg.cloudflare.com&#x2F; buster main&quot; | sudo tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;cloudflare-main.list 
+</code></pre>
+</li>
+<li>公開鍵を追加します。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ sudo curl https:&#x2F;&#x2F;pkg.cloudflare.com&#x2F;cloudflare-main.gpg -o &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;cloudflare-main.gpg
+</code></pre>
+</li>
+<li><code>cloudflared</code> をインストールします。<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ sudo apt update; sudo apt -y install cloudflared
+</code></pre>
+</li>
+</ol>
+</li>
+<li>その他のディストリビューションについては、<a href="https://pkg.cloudflare.com/">こちら</a> を参照してください。</li>
+</ul>
+
+
+        
+    
+
+        
+        
+    </article></div><footer class="footer">
+                    <div class="footer__inner"><div class="copyright" style="margin-left: auto; margin-right:auto; text-align: center">
+            <span style="white-space: nowrap;">©&nbsp;2022&nbsp;<a href="/profile">yude</a>&nbsp;</span><!--
+         --><span style="white-space: nowrap;">::&nbsp;Powered&nbsp;by&nbsp;<a href="https://www.getzola.org/">Zola</a>&nbsp;</span>
+            <a href="https://sites.google.com/site/happybusy/"><img style="margin-left: auto; margin-right:auto" src="/images/busy_banner.png"></a>
+        </div>
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+</div>
+                    
+
+                </footer></div>
+    </body>
+</html>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ja">
+	<title>yude.jp - docker</title>
+	<subtitle>The front page of yude.jp</subtitle>
+	<link href="/categories/docker/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="/"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2022-07-25T00:00:00+00:00</updated>
+	<id>/categories/docker/atom.xml</id>
+	<entry xml:lang="ja">
+		<title>Mastodon インスタンスを高速に作成する</title>
+		<published>2022-07-25T00:00:00+00:00</published>
+		<updated>2022-07-25T00:00:00+00:00</updated>
+		<link href="/blog/2022-7-mastodon/" type="text/html"/>
+		<id>/blog/2022-7-mastodon/</id>
+		<content type="html">&lt;h1 id=&quot;mian-ze-zhu-yi-shi-xiang&quot;&gt;免責 &#x2F; 注意 事項&lt;a class=&quot;zola-anchor&quot; href=&quot;#mian-ze-zhu-yi-shi-xiang&quot; aria-label=&quot;Anchor link for: mian-ze-zhu-yi-shi-xiang&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;ul&gt;
+&lt;li&gt;yude はこの記事の内容をあなたが実行した結果の責任を一切負うことができません。自己責任で行ってください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;bi-yao-namono&quot;&gt;必要なもの&lt;a class=&quot;zola-anchor&quot; href=&quot;#bi-yao-namono&quot; aria-label=&quot;Anchor link for: bi-yao-namono&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Cloudflare で管理されている独自ドメイン&lt;&#x2F;li&gt;
+&lt;li&gt;Docker, cloudflared がインストールされているマシン
+&lt;ul&gt;
+&lt;li&gt;cloudflared のインストール方法については、この記事の最後の方を参照してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;shou-shun&quot;&gt;手順&lt;a class=&quot;zola-anchor&quot; href=&quot;#shou-shun&quot; aria-label=&quot;Anchor link for: shou-shun&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;1-tenpuretono-git-ripozitoriwokuronsimasu&quot;&gt;1. テンプレートの Git リポジトリをクローンします。&lt;a class=&quot;zola-anchor&quot; href=&quot;#1-tenpuretono-git-ripozitoriwokuronsimasu&quot; aria-label=&quot;Anchor link for: 1-tenpuretono-git-ripozitoriwokuronsimasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;yude が作成した人のぬくもりのあるテンプレート Git リポジトリをクローンします。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ git clone https:&amp;#x2F;&amp;#x2F;github.com&amp;#x2F;yude&amp;#x2F;docker-mastodon mastodon
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;2-cloudflare-ni-cloudflared-kararoguinsimasu&quot;&gt;2. Cloudflare に &lt;code&gt;cloudflared&lt;&#x2F;code&gt; からログインします。&lt;a class=&quot;zola-anchor&quot; href=&quot;#2-cloudflare-ni-cloudflared-kararoguinsimasu&quot; aria-label=&quot;Anchor link for: 2-cloudflare-ni-cloudflared-kararoguinsimasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;まず、不具合を防ぐために事前に Cloudflare のダッシュボードにログインしておきます。&lt;&#x2F;li&gt;
+&lt;li&gt;その後、以下のコマンドを実行すると、Cloudflare の認証ページへの URL が表示されます。
+&lt;ul&gt;
+&lt;li&gt;若干処理が長いため、気長に待ってください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ cloudflared login
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;Cloudflare の認証ページでは、あなたが Mastodon を公開する予定のドメインを指定してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;3-cloudflare-noshe-ding-woxing-imasu&quot;&gt;3. Cloudflare の設定を行います。&lt;a class=&quot;zola-anchor&quot; href=&quot;#3-cloudflare-noshe-ding-woxing-imasu&quot; aria-label=&quot;Anchor link for: 3-cloudflare-noshe-ding-woxing-imasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;トンネルを定義します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ cloudflare tunnel create mastodon
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mastodon&lt;&#x2F;code&gt; の部分は英数字で任意に設定できます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;ドメインとトンネルを紐付けます。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ cloudflare tunnel route dns mastodon mstdn.yude.jp
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mastodon&lt;&#x2F;code&gt; の部分はステップ 1 で定義したトンネル名を指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;mstdn.yude.jp&lt;&#x2F;code&gt; の部分は Mastodon を稼働させる予定のドメインを指定してください。 &lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;4-docker-kontenanoshe-ding-woxing-imasu&quot;&gt;4. Docker コンテナの設定を行います。&lt;a class=&quot;zola-anchor&quot; href=&quot;#4-docker-kontenanoshe-ding-woxing-imasu&quot; aria-label=&quot;Anchor link for: 4-docker-kontenanoshe-ding-woxing-imasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;p&gt;クローンしたリポジトリ内にある &lt;code&gt;docker-compose.yaml&lt;&#x2F;code&gt; を開き、必要な項目を設定していきます。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;サービス &lt;code&gt;cloudflared&lt;&#x2F;code&gt; の &lt;code&gt;command&lt;&#x2F;code&gt; の項にある &lt;code&gt;mastodon&lt;&#x2F;code&gt; の部分を、ステップ 4.1 で指定したトンネル名に変更してください。&lt;br &#x2F;&gt;
+例のとおりに &lt;code&gt;mastodon&lt;&#x2F;code&gt; とした場合は、何もする必要はありません。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;5-mastodon-noshe-ding-woxing-imasu&quot;&gt;5. Mastodon の設定を行います。&lt;a class=&quot;zola-anchor&quot; href=&quot;#5-mastodon-noshe-ding-woxing-imasu&quot; aria-label=&quot;Anchor link for: 5-mastodon-noshe-ding-woxing-imasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;まずは、設定ファイルのテンプレートをダウンロードします。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ wget -O .env.production https:&amp;#x2F;&amp;#x2F;raw.githubusercontent.com&amp;#x2F;mastodon&amp;#x2F;mastodon&amp;#x2F;main&amp;#x2F;.env.production.sample
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;.env.production&lt;&#x2F;code&gt; を開き、必要な項目を設定していきます。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;まずは、設定に使用するコマンドを2つ示します。これらは、両方とも &lt;code&gt;docker-compose.yaml&lt;&#x2F;code&gt; が存在するディレクトリで実行してください。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;コマンド1: &lt;code&gt;docker compose run --rm bundle exec web rake secret&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;コマンド2: &lt;code&gt;docker compose run --rm bundle exec web rake mastodon:webpush:generate_vapid_key&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;以下が &lt;code&gt;.env.production&lt;&#x2F;code&gt; 中の設定項目です。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LOCAL_DOMAIN&lt;&#x2F;code&gt;: Mastodon を稼働させる予定のドメイン (例: &lt;code&gt;mstdn.yude.jp&lt;&#x2F;code&gt;)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;REDIS_HOST&lt;&#x2F;code&gt;: &lt;code&gt;redis&lt;&#x2F;code&gt; に変更してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;DB_HOST&lt;&#x2F;code&gt;: &lt;code&gt;db&lt;&#x2F;code&gt; に変更してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;ES_ENABLED&lt;&#x2F;code&gt;: 今回は &lt;code&gt;false&lt;&#x2F;code&gt; に変更してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SECRET_KEY_BASE&lt;&#x2F;code&gt;: &lt;strong&gt;コマンド1&lt;&#x2F;strong&gt;を実行して得られた文字列を貼り付けてください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;OTP_SECRET&lt;&#x2F;code&gt;: &lt;strong&gt;コマンド1&lt;&#x2F;strong&gt;を実行して得られた文字列を貼り付けてください。ただし、&lt;code&gt;SECRET_KEY_BASE&lt;&#x2F;code&gt; とは異なる文字列になるようにしてください。(2回生成コマンドを実行してください。)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;VAPID_PRIVATE_KEY&lt;&#x2F;code&gt; &amp;amp; &lt;code&gt;VAPID_PUBLIC_KEY&lt;&#x2F;code&gt;: &lt;strong&gt;コマンド2&lt;&#x2F;strong&gt;を実行して得られた文字列を貼り付けてください。コマンドを実行すると、そのまま貼り付けられる形式で結果を得られます。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;以下の設定項目には、SMTP サーバ (電子メールの送信を担当するサーバ) が必要です。なんらかの手段によって、これを用意してください。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;SMTP_SERVER&lt;&#x2F;code&gt;: SMTP サーバのアドレスを指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_PORT&lt;&#x2F;code&gt;: SMTP サーバのポート番号を指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_LOGIN&lt;&#x2F;code&gt;: SMTP サーバのユーザ ID を指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_PASSWORD&lt;&#x2F;code&gt;: SMTP サーバのパスワードを指定してください。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SMTP_FROM_ADDRESS&lt;&#x2F;code&gt;: サーバーの利用者から、Mastodon インスタンスからのメールに付属するメールアドレスをどのように見せたいかを指定してください。(例: &lt;code&gt;noreply@yude.jp&lt;&#x2F;code&gt;)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;また、自分しか使用しない場合は、&lt;code&gt;.env.production&lt;&#x2F;code&gt; に以下を追記してください。&lt;pre&gt;&lt;code&gt;SINGLE_USER_MODE=true
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;アセットファイルとデータベースを初期化します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ docker compose run --rm web rails db:migrate
+$ docker compose run --rm web rails assets:precompile
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;6-qi-dong-simasu&quot;&gt;6. 起動します。&lt;a class=&quot;zola-anchor&quot; href=&quot;#6-qi-dong-simasu&quot; aria-label=&quot;Anchor link for: 6-qi-dong-simasu&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h2&gt;
+&lt;pre&gt;&lt;code&gt;$ docker compose up -d
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;起動後、あなたのアカウントをできるだけ早く作成してください。&lt;&#x2F;li&gt;
+&lt;li&gt;起動したら、以下のコマンドであなたのアカウントを管理者に設定してください。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ docker exec -it $(docker compose ps -q web) bin&amp;#x2F;tootctl accounts modify your_name --role admin
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;your_name&lt;&#x2F;code&gt; にはあなたのスクリーンネームを指定します。(例: &lt;code&gt;@your_name&lt;&#x2F;code&gt; と表示されているものを、&lt;code&gt;your_name&lt;&#x2F;code&gt; として指定します。)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;can-kao-cloudflared-woinsutorusuru&quot;&gt;参考: cloudflared をインストールする&lt;a class=&quot;zola-anchor&quot; href=&quot;#can-kao-cloudflared-woinsutorusuru&quot; aria-label=&quot;Anchor link for: can-kao-cloudflared-woinsutorusuru&quot;&gt;§&lt;&#x2F;a&gt;
+&lt;&#x2F;h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Debian の場合
+&lt;ol&gt;
+&lt;li&gt;リポジトリを追加します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ echo &amp;quot;deb [signed-by=&amp;#x2F;usr&amp;#x2F;share&amp;#x2F;keyrings&amp;#x2F;cloudflare-main.gpg] https:&amp;#x2F;&amp;#x2F;pkg.cloudflare.com&amp;#x2F; buster main&amp;quot; | sudo tee &amp;#x2F;etc&amp;#x2F;apt&amp;#x2F;sources.list.d&amp;#x2F;cloudflare-main.list 
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;公開鍵を追加します。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ sudo curl https:&amp;#x2F;&amp;#x2F;pkg.cloudflare.com&amp;#x2F;cloudflare-main.gpg -o &amp;#x2F;usr&amp;#x2F;share&amp;#x2F;keyrings&amp;#x2F;cloudflare-main.gpg
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;cloudflared&lt;&#x2F;code&gt; をインストールします。&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;$ sudo apt update; sudo apt -y install cloudflared
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;その他のディストリビューションについては、&lt;a href=&quot;https:&#x2F;&#x2F;pkg.cloudflare.com&#x2F;&quot;&gt;こちら&lt;&#x2F;a&gt; を参照してください。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+	</entry>
+</feed>

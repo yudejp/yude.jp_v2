@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+    <title>Windows 11 と Arch Linux のデュアルブートを設定しました - yude.jp</title>
+    
+    
+<meta http-equiv="content-type"
+    content="text/html; charset=utf-8">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+<meta name="description"
+    content="The front page of yude.jp" />
+
+    <meta property="og:title" content="yude.jp -&nbsp;Windows 11 と Arch Linux のデュアルブートを設定しました" />
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="&#x2F;blog&#x2F;2022-7-install-arch-linux&#x2F;"/>
+    <meta property="og:description" content="Windows と Arch Linux のデュアルブートの方法を備忘録として残しておきます。"/>
+<link rel="stylesheet"
+    href="/style.css">
+<link rel="stylesheet"
+    href="/color/pink.css">
+<link rel="shortcut icon"
+    href="/images/favicon.ico"
+    type="image/x-icon" /><link rel="alternate"
+    type="application/atom+xml"
+    title="yude.jp RSS"
+    href="/atom.xml"></head>
+    <body>
+        <div class="container center">
+<header class="header">
+    <div class="header__inner">
+        <div class="header__logo">
+            <a href="&#x2F;">
+    <div class="logo">
+        yude.jp
+    </div>
+</a>
+        </div>
+        <div class="menu-trigger">menu</div>
+    </div>
+    
+    <nav class="menu">
+        <ul class="menu__inner menu__inner--desktop">
+            
+            
+                    <li>
+                        <a href="
+    
+        /profile
+    
+">プロフィール</a>
+                    </li>
+                
+                    <li>
+                        <a href="
+    
+        /services
+    
+">サービス</a>
+                    </li>
+                
+                    <li>
+                        <a href="
+    
+        /blog
+    
+">ブログ</a>
+                    </li>
+                <ul class="menu__sub-inner">
+                        <li class="menu__sub-inner-more-trigger">show more ▾</li>
+                        <ul class="menu__sub-inner-more hidden">
+                            
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;github.com&#x2F;yudejp
+    
+">GitHub Organization</a>
+        </li>
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;discord.gg&#x2F;X6srY7X
+    
+">Discord サーバー</a>
+        </li>
+        <li>
+            <a href="
+    
+        /mutual-links
+    
+">相互リンク</a>
+        </li>
+                        </ul>
+                    </ul>
+            </ul>
+
+        <ul class="menu__inner menu__inner--mobile">
+            
+        <li>
+            <a href="
+    
+        /profile
+    
+">プロフィール</a>
+        </li>
+        <li>
+            <a href="
+    
+        /services
+    
+">サービス</a>
+        </li>
+        <li>
+            <a href="
+    
+        /blog
+    
+">ブログ</a>
+        </li>
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;github.com&#x2F;yudejp
+    
+">GitHub Organization</a>
+        </li>
+        <li>
+            <a href="
+    
+        https:&#x2F;&#x2F;discord.gg&#x2F;X6srY7X
+    
+">Discord サーバー</a>
+        </li>
+        <li>
+            <a href="
+    
+        /mutual-links
+    
+">相互リンク</a>
+        </li>
+        </ul>
+    </nav>
+
+    </header>
+<div class="content"><article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="&#x2F;blog&#x2F;2022-7-install-arch-linux&#x2F;">Windows 11 と Arch Linux のデュアルブートを設定しました</a>
+            </h1>
+            
+    <div class="post-meta">
+        <span class="post-date">2022.07.05
+                </span>
+
+        <span class="post-author"></span>
+
+        
+
+    
+    :: {<a href="/categories/technology/">technology</a>,
+            <a href="/categories/linux/">linux</a>,
+            <a href="/categories/arch-linux/">arch linux</a>} 
+
+            
+    ::
+    #<a href="/tags/memo/">memo</a>
+        
+    
+            
+        
+    </div>
+
+        </header><h1 id="hazimeni">はじめに<a class="zola-anchor" href="#hazimeni" aria-label="Anchor link for: hazimeni">§</a>
+</h1>
+<p>2022年7月に <a href="https://www.lenovo.com/jp/ja/notebooks/thinkpad/e-series/ThinkPad-E14-Gen-3-14%E2%80%9D-AMD/p/22TPE14E4A3">Lenovo ThinkPad E14 Gen 3 (AMD)</a> を導入し、Windows 11 と Arch Linux のデュアルブートを設定しました。<br />
+この記事では、その方法を備忘録として公開します。<br />
+また、Windows 11 としていますが、UEFI でブートするように設定されている Windows 7 以上の Windows であれば問題なく実行できるはずです。</p>
+<h1 id="mian-ze-zhu-yi-shi-xiang">免責 / 注意 事項<a class="zola-anchor" href="#mian-ze-zhu-yi-shi-xiang" aria-label="Anchor link for: mian-ze-zhu-yi-shi-xiang">§</a>
+</h1>
+<ul>
+<li>yude はこの記事の内容をあなたが実行した結果の責任を一切負うことができません。自己責任で行ってください。
+<ul>
+<li>Arch Linux, Gentoo Linux, Linux From Scratch などのソースベースの Linux ディストリビューションをインストールしたことがないレベルの初学者の方は、本番環境のコンピュータで行うことを全く推奨しません。パーティションテーブルを破壊しても問題のないコンピュータで実行してください。</li>
+</ul>
+</li>
+<li>操作を行う前に、必要なデータをバックアップしてください。また、インストール前に、できるだけ関係のないストレージをコンピュータから取り外しておくことを推奨します。</li>
+</ul>
+<h1 id="yong-yi">用意<a class="zola-anchor" href="#yong-yi" aria-label="Anchor link for: yong-yi">§</a>
+</h1>
+<p>インストールする前に、コンピュータが条件を満たしていることを確認します。</p>
+<ul>
+<li>UEFI に対応していること。2012 年以降に製造されたコンピュータであれば、大抵問題ありません。</li>
+<li>デスクトップ環境を導入する場合は 2 GB 以上のメモリ。そうでない場合は 512 MB。</li>
+<li>アーキテクチャが x86_64 であること。</li>
+<li>Apple の T2 チップ搭載 Mac 等、特殊なハードウェアでないこと。元々 Windows が稼働しているコンピュータであれば、大抵問題ありません。</li>
+</ul>
+<p>その他、<a href="https://wiki.archlinux.jp/index.php/%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%82%AC%E3%82%A4%E3%83%89">インストールガイド</a>に記載されている条件を満たしていることを確認してください。</p>
+<h1 id="shou-shun">手順<a class="zola-anchor" href="#shou-shun" aria-label="Anchor link for: shou-shun">§</a>
+</h1>
+<h2 id="buto-usb-nozhun-bei">ブート USB の準備<a class="zola-anchor" href="#buto-usb-nozhun-bei" aria-label="Anchor link for: buto-usb-nozhun-bei">§</a>
+</h2>
+<ul>
+<li>まず、Arch Linux の最新の iso イメージファイルを<a href="https://www.archlinux.jp/download/">ダウンロード</a>してください。</li>
+</ul>
+<h3 id="windows">Windows<a class="zola-anchor" href="#windows" aria-label="Anchor link for: windows">§</a>
+</h3>
+<ul>
+<li><a href="https://rufus.ie/ja/">Rufus</a> または <a href="https://www.balena.io/etcher/">balenaEtcher</a> を使うのが楽です。</li>
+</ul>
+<h3 id="macos">macOS<a class="zola-anchor" href="#macos" aria-label="Anchor link for: macos">§</a>
+</h3>
+<ul>
+<li><a href="https://www.balena.io/etcher/">balenaEtcher</a> を使うのが楽です。</li>
+</ul>
+<h3 id="linux">Linux<a class="zola-anchor" href="#linux" aria-label="Anchor link for: linux">§</a>
+</h3>
+<ul>
+<li><code>dd</code> コマンドを使用して書き込みます。<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ sudo dd if=archiso.iso of=&#x2F;dev&#x2F;sdHoge bs=1M status=progress
+</code></pre>
+<ul>
+<li><code>archiso.iso</code> は iso イメージへのパス、<code>/dev/sdHoge</code> は USB フラッシュドライブのデバイスファイルに置き換えてください。
+<ul>
+<li>デバイスファイルは、<code>sudo fdisk -l</code> コマンド等で確認できます。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>GUI が必要な場合は、先述の <a href="https://www.balena.io/etcher/">balenaEtcher</a> を使うこともできます。</li>
+</ul>
+<h2 id="konpiyutanozhun-bei">コンピュータの準備<a class="zola-anchor" href="#konpiyutanozhun-bei" aria-label="Anchor link for: konpiyutanozhun-bei">§</a>
+</h2>
+<h3 id="windows-noshe-ding">Windows の設定<a class="zola-anchor" href="#windows-noshe-ding" aria-label="Anchor link for: windows-noshe-ding">§</a>
+</h3>
+<ul>
+<li>リアルタイムクロックを UTC 基準にします。
+<ul>
+<li>Windows は、既定の状態では時計の基準に現地時間を使いますが、これはデュアルブートにおいて相性が悪いです。</li>
+<li>以下のコマンドを管理者権限のあるターミナルで実行してください。<pre><code>reg add &quot;HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation&quot; &#x2F;v RealTimeIsUniversal &#x2F;d 1 &#x2F;t REG_DWORD &#x2F;f
+</code></pre>
+</li>
+</ul>
+</li>
+<li>高速スタートアップとハイバネートを無効化します。
+<ul>
+<li>これにより、Windows を使用中に「休止状態」にすることができなくなりますが、Arch Linux の使用中に起きる可能性のある問題を避けることができます。</li>
+<li>「休止状態」を使用する必要がある場合は、代わりに高速スタートアップのみを無効化することができます。
+<ul>
+<li>方法については、以下のページをご覧ください:<br />
+<a href="https://www.fmworld.net/cs/azbyclub/qanavi/jsp/qacontents.jsp?PID=6010-9312">富士通Q&amp;A - [Windows 10] 高速スタートアップを無効にする方法を教えてください。 - FMVサポート : 富士通パソコン</a></li>
+</ul>
+</li>
+<li>高速スタートアップとハイバネートを無効化するには、以下のコマンドを管理者権限のあるターミナルで実行してください。<pre><code>powercfg &#x2F;h off
+</code></pre>
+</li>
+</ul>
+</li>
+<li>パーティションを準備します。
+<ul>
+<li>Windows と Arch Linux を同じストレージ デバイスにインストールする場合は、Windows が専有しているパーティションを縮小してください。
+<ul>
+<li>縮小する前に、ストレージに十分な空き容量を確保し、かつデフラグを行う必要がある場合もあります。</li>
+<li>方法については、以下のページをご覧ください:<br />
+<a href="https://faq.nec-lavie.jp/qasearch/1007/app/servlet/relatedqa?QID=020024">NEC LAVIE公式サイト &gt; サービス＆サポート &gt; Q&amp;A &gt; Q&amp;A番号 020024 「Windows 10で、Cドライブの容量を縮小して新しくドライブを作成する方法について教えてください。」</a></li>
+</ul>
+</li>
+<li>コンピュータに内蔵ストレージ デバイスが複数取り付けられており、物理的に異なるデバイスに Arch Linux をインストールする場合は、「ディスクの管理」から事前にパーティションを初期化しておいてください。
+<ul>
+<li>手順は以下のページを参考にしてください:<br />
+<a href="https://docs.microsoft.com/ja-jp/windows-server/storage/disk-management/initialize-new-disks">新しいディスクの初期化 | Microsoft Docs</a></li>
+<li>パーティションの種類については、<strong>GPT</strong> を選択してください。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Windows の設定を完了したら、次は UEFI の設定を行います。</li>
+</ul>
+<h3 id="uefi-noshe-ding">UEFI の設定<a class="zola-anchor" href="#uefi-noshe-ding" aria-label="Anchor link for: uefi-noshe-ding">§</a>
+</h3>
+<ul>
+<li>操作手順はコンピュータに搭載されている UEFI によって異なるため、ここでは手順を記載せず、達成するべき目標のみを記述します。
+<ul>
+<li>セキュアブートを無効化してください。</li>
+<li>ファストブートをできるだけ無効化してください。</li>
+<li>ブート元デバイスの順番を調節し、USB フラッシュドライブが最初に読み込まれるようにしてください。</li>
+</ul>
+</li>
+</ul>
+<h2 id="arch-linux-noji-ben-de-nainsutoru">Arch Linux の基本的なインストール<a class="zola-anchor" href="#arch-linux-noji-ben-de-nainsutoru" aria-label="Anchor link for: arch-linux-noji-ben-de-nainsutoru">§</a>
+</h2>
+<p>いよいよ、Arch Linux をストレージにインストールします。<br />
+まずは、iso イメージを書き込んだ USB フラッシュドライブから Arch Linux をブートしてください。</p>
+<h3 id="shou-shun-1">手順<a class="zola-anchor" href="#shou-shun-1" aria-label="Anchor link for: shou-shun-1">§</a>
+</h3>
+<h4 id="1-kimatupuwoshe-ding-simasu">1. キーマップを設定します。<a class="zola-anchor" href="#1-kimatupuwoshe-ding-simasu" aria-label="Anchor link for: 1-kimatupuwoshe-ding-simasu">§</a>
+</h4>
+<ul>
+<li>日本語のキーボードを使用している場合は、以下のコマンドを実行します。<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ loadkeys jp106
+</code></pre>
+</li>
+<li>英字のキーボードを使用している場合は、手順をスキップしてください。</li>
+</ul>
+<h4 id="2-intanetutonijie-sok-simasu">2. インターネットに接続します。<a class="zola-anchor" href="#2-intanetutonijie-sok-simasu" aria-label="Anchor link for: 2-intanetutonijie-sok-simasu">§</a>
+</h4>
+<ul>
+<li>有線で接続する場合<br />
+LAN ケーブルをコンピュータに接続してください。</li>
+<li>Wi-Fi で接続する場合</li>
+</ul>
+<ol>
+<li><code>iwctl</code> コマンドを実行します。プロンプトが <code>[iwd]#</code> に変化したことを確認してください。</li>
+<li><code>device list</code> で無線 LAN アダプターの一覧を表示します。<br />
+<code>Name</code> の列に表示されているものを覚えるか、メモしてください。通常 <code>wlan0</code> などが該当します。<br />
+これはデバイス名で、ステップ 3 以降で使用します。</li>
+<li><code>station デバイス名 scan</code> で Wi-Fi ネットワークをスキャンします。</li>
+<li><code>station デバイス名 get-networks</code> で近隣にあるアクセスポイントの SSID を確認します。</li>
+<li><code>station デバイス名 connect 目的の SSID</code> でアクセスポイントに接続します。
+コマンドの実行後、パスワードを求められますから入力してください。</li>
+<li><code>exit</code> で iwctl から抜けます。</li>
+</ol>
+<h4 id="3-shi-ji-wodiao-jie-simasu">3. 時計を調節します。<a class="zola-anchor" href="#3-shi-ji-wodiao-jie-simasu" aria-label="Anchor link for: 3-shi-ji-wodiao-jie-simasu">§</a>
+</h4>
+<ul>
+<li>NTP サーバから正しい時刻を取得します。<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ timedatectl set-ntp true
+</code></pre>
+</li>
+</ul>
+<h4 id="4-pateisiyonwochu-qi-hua-simasu">4. パーティションを初期化します。<a class="zola-anchor" href="#4-pateisiyonwochu-qi-hua-simasu" aria-label="Anchor link for: 4-pateisiyonwochu-qi-hua-simasu">§</a>
+</h4>
+<ol>
+<li>目的のパーティションのデバイスファイルの場所を確認します。<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ fdisk -l
+</code></pre>
+</li>
+</ol>
+<p>デバイス の列に表示されているものが、デバイスファイルの場所です。<br />
+いくつか表示されているもののうち、次に該当するものをメモしておきます。</p>
+<ul>
+<li>タイプが &quot;EFI システム&quot; となっているもの。</li>
+<li>Arch Linux をインストールする先のパーティション
+<ul>
+<li>「Windows の設定」で用意したパーティションのデバイス ファイルをメモしてください。</li>
+<li>明確なラベル等は表示されないため、パーティションの順序・大きさ等から目的のパーティションを特定してください。
+<ul>
+<li>もしくは、一時的にマウントして目的のパーティションであるかどうかを確認できます:</li>
+</ul>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh"># NTFS のパーティションをマウントするために必要
+$ pacman -S ntfs-3g
+# マウントする
+## ここでエラーが発生するとき、「パーティションの中身を表示する」をスキップしてください。
+## エラーが発生する場合は、この手順で目的のパーティションであるかどうかを特定することは危険です。
+$ mount --mkdir [パーティションのデバイス ファイルの場所] &#x2F;tmp&#x2F;hogepart
+# パーティションの中身を表示する
+$ ls &#x2F;tmp&#x2F;hogepart
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>Arch Linux をインストールするパーティションを ext4 でフォーマットします。</li>
+</ol>
+<ul>
+<li>ext4 は Linux において最も一般的なファイルシステムです。</li>
+<li>次のコマンドでフォーマットできます:<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ mkfs.ext4 [ステップ 1 で確認したデバイスファイルのパス]
+# 例: mkfs.ext4 &#x2F;dev&#x2F;sda2 または mkfs.ext4 &#x2F;dev&#x2F;nvme1n1p2 など。
+</code></pre>
+</li>
+</ul>
+<h4 id="5-bi-yao-napateisiyonwomauntosimasu">5. 必要なパーティションをマウントします。<a class="zola-anchor" href="#5-bi-yao-napateisiyonwomauntosimasu" aria-label="Anchor link for: 5-bi-yao-napateisiyonwomauntosimasu">§</a>
+</h4>
+<ul>
+<li>マウントとは、ストレージ デバイスの中にある特定のパーティションと、自分が現在アクセスできる何らかのディレクトリを関連付ける操作のことをいいます。</li>
+</ul>
+<ol>
+<li>Linux のインストール先のパーティションをマウントします。<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ mount [ステップ 1 で確認したデバイスファイルのパス] &#x2F;mnt
+# 例: mount &#x2F;dev&#x2F;sda2 &#x2F;mnt または mount &#x2F;dev&#x2F;nvme1n1p2 &#x2F;mnt など。
+</code></pre>
+</li>
+<li>EFI パーティションをマウントします。<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ mount --mkdir [ステップ 1 で確認したデバイスファイルのパス] &#x2F;mnt&#x2F;boot
+# 例: mount &#x2F;dev&#x2F;sda1 &#x2F;mnt または mount &#x2F;dev&#x2F;nvme1n1p0 &#x2F;mnt など。
+</code></pre>
+</li>
+</ol>
+<h3 id="6-ji-ben-de-na-linux-sisutemunoinsutoru">6. 基本的な Linux システムのインストール<a class="zola-anchor" href="#6-ji-ben-de-na-linux-sisutemunoinsutoru" aria-label="Anchor link for: 6-ji-ben-de-na-linux-sisutemunoinsutoru">§</a>
+</h3>
+<p>Arch Linux の基本的な内容をインストールするには、<code>pacstrap</code> コマンドを使用します。</p>
+<ul>
+<li>実用的な Linux システムをインストールするには、次のように実行します。<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ pacstrap &#x2F;mnt base base-devel linux linux-firmware nano neofetch sudo networkmanager git grep refind intel-ucode bash-completion
+</code></pre>
+</li>
+<li><code>pacstrap</code> の説明
+<ul>
+<li>第1引数には、Linux をインストールするパーティションのマウント先を指定します。</li>
+<li>第2引数以降には、Linux システムを初期化するとともにインストールしたいパッケージを列挙します。
+<ul>
+<li>基本的には、例示されているパッケージを削らないでください。これからのステップでは、これらのパッケージがインストール済みであることを前提に進むからです。</li>
+<li>パッケージの説明 (一部省略)
+<ul>
+<li><code>base</code>, <code>linux</code>, <code>linux-firmware</code>: Arch Linux を構成する基本的なパッケージ / グループで、必須です。</li>
+<li><code>base-devel</code>: パッケージをビルドしたりするための開発用ツールの集合です。</li>
+<li><code>nano</code>: CLI で使えるテキストエディタです。<code>vim</code> などに置き換えることができます。</li>
+<li><code>neofetch</code>: システムの概要を表示します。</li>
+<li><code>sudo</code>: 一時的にユーザーに特権を許します。</li>
+<li><code>networkmanager</code>: ネットワークへの接続を司ります。</li>
+<li><code>git</code>: バージョン管理システム Git のクライアントです。</li>
+<li><code>intel-ucode</code>: Intel 製 CPU のマイクロコードです。CPU がリリースされた後に発見されたバグなどを修正します。(<strong>AMD 製 CPU をお使いの方は、代わりに <code>amd-ucode</code> をインストールしてください。</strong>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-insutorusita-arch-linux-woshe-ding-simasu">7. インストールした Arch Linux を設定します。<a class="zola-anchor" href="#7-insutorusita-arch-linux-woshe-ding-simasu" aria-label="Anchor link for: 7-insutorusita-arch-linux-woshe-ding-simasu">§</a>
+</h3>
+<ol>
+<li>
+<p>fstab を生成します。
+<code>/etc/fstab</code> というファイルがあり、ここには Linux システムがどのパーティションを起動時等にどこにマウントすべきかを記述します。<br />
+以下のコマンドで、自動的に生成できます。</p>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ genfstab -U &#x2F;mnt &gt;&gt; &#x2F;mnt&#x2F;etc&#x2F;fstab
+</code></pre>
+</li>
+<li>
+<p>chroot でインストールした Linux システムに憑依します。
+インストールしたシステムに入り込んで、詳細な設定を行います。</p>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ arch-chroot &#x2F;mnt
+</code></pre>
+</li>
+<li>
+<p>タイムゾーンを設定します。
+以下のコマンドを実行して、タイムゾーンを設定します。日本にお住まいの場合は以下のコマンドを実行してください。</p>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ sudo timedatectl set-timezone Asia&#x2F;Tokyo
+$ hwclock --systohc
+</code></pre>
+</li>
+<li>
+<p>国際化
+Linux システムに日本語を教えます。</p>
+</li>
+<li>
+<p><code>/etc/locale.gen</code> を <code>nano</code> などのテキストエディタで開き、以下の内容に該当する行のコメントアウトを解除してください。</p>
+<pre><code>en_US.UTF-8
+ja_JP.UTF-8
+</code></pre>
+</li>
+<li>
+<p>以下のコマンドを実行して、キーマップを設定します。</p>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ localectl set-keymap jp106
+</code></pre>
+</li>
+<li>
+<p>以下のコマンドを実行して、言語ファイルを生成します。</p>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ locale-gen
+</code></pre>
+</li>
+<li>
+<p>コンピュータのホスト名を設定します。
+英数字を用いて、コンピュータの名前を設定してください。ただし、先頭に数字が来ないようにしてください。<br />
+以下のコマンドを実行することで、設定できます。</p>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ echo [コンピュータの名前] &gt;&gt; &#x2F;etc&#x2F;hostname
+# 例: echo &quot;arch&quot; &gt;&gt; &#x2F;etc&#x2F;hostname
+</code></pre>
+</li>
+<li>
+<p>コンピュータのアカウントを設定します。</p>
+<ul>
+<li>まず、root アカウントのパスワードを設定します。以下のコマンドを実行してください。</li>
+</ul>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ passwd
+</code></pre>
+<ul>
+<li>次に、自分が普段使用するアカウントを作成し、パスワードを設定します。以下のコマンドを実行してください。</li>
+</ul>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh"># 以下の例では、自分のアカウントを wheel グループ (管理者) に所属させ、シェルに Bash を使うようにします。
+# 名前は、英数字で設定してください。
+$ useradd -m -G wheel -s &#x2F;bin&#x2F;bash 名前
+# パスワードを設定します。
+passwd 名前
+</code></pre>
+<ul>
+<li><code>wheel</code> グループが <code>sudo</code> コマンドを使用できるようにします。
+<code>sudo</code> の設定ファイルは、<code>EDITOR=nano visudo</code> コマンドを実行すると開けます。<br />
+以下の内容を、開いたテキストファイルに<strong>追記</strong>してください。</li>
+</ul>
+<pre><code>%wheel ALL=(ALL) ALL
+</code></pre>
+</li>
+<li>
+<p>必要なサービスの有効化
+普段使用するサービスを、Linux の起動時に同時に起動させるようにしておきます。<br />
+以下のコマンドを実行してください。</p>
+</li>
+</ol>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ sudo systemctl enable NetworkManager.service
+</code></pre>
+<ol start="8">
+<li>ブートローダの設定
+Linux を呼び出すには、ブートローダーが必要です。今回は <a href="https://wiki.archlinux.jp/index.php/REFInd">rEFInd</a> という優れたブートローダーを使用します。<br />
+以下に手順を示します。
+<ol>
+<li>以下のコマンドで、基本的なファイルを自動的に生成します。</li>
+</ol>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">$ refind-install
+</code></pre>
+<ol start="2">
+<li><code>/boot/refind_linux.conf</code> を編集します。</li>
+</ol>
+<ul>
+<li>作業前に、ファイルをバックアップしておきます。以下のコマンドを実行してください。</li>
+</ul>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">cp &#x2F;boot&#x2F;refind_linux.conf &#x2F;boot&#x2F;refind_linux.conf.bak
+</code></pre>
+</li>
+</ol>
+<ul>
+<li>以下のコマンドを実行して、rEFInd を設定します。</li>
+</ul>
+<pre data-lang="sh" class="language-sh "><code class="language-sh" data-lang="sh">echo &quot;\&quot;Boot with standard options\&quot; \&quot;root=UUID=$(blkid [Linux をインストールしたパーティションのデバイス ファイルの場所] -s UUID -o value) rootfstype=ext4 rw splash\&quot;&quot;
+</code></pre>
+<h4 id="9-ji-ben-de-nasetutoatupunowan-liao">9. 基本的なセットアップの完了<a class="zola-anchor" href="#9-ji-ben-de-nasetutoatupunowan-liao" aria-label="Anchor link for: 9-ji-ben-de-nasetutoatupunowan-liao">§</a>
+</h4>
+<p>以上で、基本的なセットアップは完了したはずです。<code>exit</code> コマンドを実行して chroot から抜け、<code>reboot</code> で再起動します。</p>
+<ul>
+<li>起動しない場合
+<ul>
+<li>Windows が起動してしまう場合<br />
+UEFI の設定で、<code>rEFInd Boot Manager</code> の優先順位を最高にしてください。</li>
+<li>Emergency mode に入ってしまう場合<br />
+<code>refind_linux.conf</code> の記述が間違っています。もう一度手順を読み込み、やり直してください。</li>
+</ul>
+</li>
+</ul>
+<h2 id="10-arch-linux-nodesukutotupuhuan-jing-nodao-ru">10. Arch Linux のデスクトップ環境の導入<a class="zola-anchor" href="#10-arch-linux-nodesukutotupuhuan-jing-nodao-ru" aria-label="Anchor link for: 10-arch-linux-nodesukutotupuhuan-jing-nodao-ru">§</a>
+</h2>
+<ul>
+<li>
+<p>デスクトップ環境が必要ない場合、この手順を完全に飛ばすことができます。</p>
+</li>
+<li>
+<p>今回は、<a href="https://kde.org/plasma-desktop/">KDE Plasma</a> というデスクトップ環境を導入します。</p>
+<ul>
+<li>スクリーンショット
+<img src="https://i.imgur.com/xlxiPMR.png" alt="" /></li>
+</ul>
+</li>
+<li>
+<ol>
+<li>必要なパッケージをインストールします。</li>
+</ol>
+<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ sudo pacman -Syu plasma kde-applications sddm xorg adobe-source-han-sans-jp-fonts fcitx-im fcitx-configtool fcitx-mozc kcm-fcitx
+</code></pre>
+</li>
+<li>
+<ol start="2">
+<li>SDDM が Arch Linux の起動時に自動的に立ち上がるようにします。</li>
+</ol>
+<ul>
+<li>SDDM は、X サーバのセッションを開始する役目を担います。</li>
+<li>以下のコマンドを実行して、自動起動を有効にします。</li>
+</ul>
+<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ sudo systemctl enable sddm
+</code></pre>
+</li>
+<li>
+<ol start="3">
+<li>日本語入力の設定をします。</li>
+</ol>
+<ul>
+<li>ホームディレクトリ以下の <code>.xprofile</code> (正確なパス: <code>$HOME/.xprofile</code>) に以下の内容を書き込んでください。</li>
+</ul>
+<pre><code>export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=”@im=fcitx”
+</code></pre>
+</li>
+<li>
+<ol start="4">
+<li>表示言語を日本語に設定し、キーボードレイアウトを設定します。</li>
+</ol>
+<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ sudo localectl set-locale ja_JP.UTF-8
+$ sudo localectl set-x11-keymap jp
+
+</code></pre>
+</li>
+<li>
+<ol start="5">
+<li>再起動し、Plasma を起動します。</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Fcitx (日本語入力メソッド) が自動的に起動するようにします。また、入力メソッドとして登録します。</li>
+</ol>
+<ul>
+<li>ここからのコマンドは、Konsole 等のターミナルエミュレータから実行するようにします。</li>
+<li>自動起動するには、以下のコマンドを実行します。</li>
+</ul>
+<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ fcitx-autostart
+</code></pre>
+<ul>
+<li>Fcitx を入力メソッドの1つとして登録します。以下のコマンドを実行して表示された画面から、Mozc を追加します。</li>
+</ul>
+<pre data-lang="bash" class="language-bash "><code class="language-bash" data-lang="bash">$ fcitx-configtool
+</code></pre>
+</li>
+<li>
+<ol start="7">
+<li>もう一度再起動すると、すべての設定が完了します。</li>
+</ol>
+</li>
+</ul>
+<h1 id="11-zhong-warini">11. 終わりに<a class="zola-anchor" href="#11-zhong-warini" aria-label="Anchor link for: 11-zhong-warini">§</a>
+</h1>
+<p>内容の誤り、補足、誤字・脱字 等ございましたら、<a href="https://github.com/yudejp/yude.jp_v2/issues">こちら</a> までお願いします。</p>
+
+
+        
+    
+
+        
+        
+    </article></div><footer class="footer">
+                    <div class="footer__inner"><div class="copyright" style="margin-left: auto; margin-right:auto; text-align: center">
+            <span style="white-space: nowrap;">©&nbsp;2022&nbsp;<a href="/profile">yude</a>&nbsp;</span><!--
+         --><span style="white-space: nowrap;">::&nbsp;Powered&nbsp;by&nbsp;<a href="https://www.getzola.org/">Zola</a>&nbsp;</span>
+            <a href="https://sites.google.com/site/happybusy/"><img style="margin-left: auto; margin-right:auto" src="/images/busy_banner.png"></a>
+        </div>
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+</div>
+                    
+
+                </footer></div>
+    </body>
+</html>

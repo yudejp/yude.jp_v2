@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ja">
+	<title>yude.jp - news</title>
+	<subtitle>The front page of yude.jp</subtitle>
+	<link href="/tags/news/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="/"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2022-02-12T00:00:00+00:00</updated>
+	<id>/tags/news/atom.xml</id>
+	<entry xml:lang="ja">
+		<title>サイトを移行しました。</title>
+		<published>2022-02-12T00:00:00+00:00</published>
+		<updated>2022-02-12T00:00:00+00:00</updated>
+		<link href="/blog/2022-2-site-migrated/" type="text/html"/>
+		<id>/blog/2022-2-site-migrated/</id>
+		<content type="html">&lt;p&gt;2021年3月頃から yude.jp では Next.js + Tailwind CSS でサイトを構成してきましたが、機能を縮小するにあたりこの構成は過剰だったことと、Node.js のエコシステムに疲れてしまったことから、今回 Rust 製の SSG フレームワークである Zola に移行しました。&lt;br &#x2F;&gt;
+現在の構成は以下のとおりです。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Zola のテーマ: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ejmg&#x2F;zerm&quot;&gt;zerm&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;del&gt;Zola のビルド: GitHub Actions&lt;&#x2F;del&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Zola のビルド, デプロイ: &lt;a href=&quot;https:&#x2F;&#x2F;pages.cloudflare.com&#x2F;&quot;&gt;Cloudflare Pages&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;del&gt;当初、Zola のビルドとデプロイを両方とも Cloudflare Pages で行おうとしていましたが、zerm のテーマを使用した状態ではどうしてもビルドが通らず (&lt;code&gt;styles.css&lt;&#x2F;code&gt; が見つからない 等の前代未聞のエラーが発生...)、仕方なく GitHub Actions で gh-pages ブランチにビルドしたものを Cloudflare Pages にアップロードしています。ええ...&lt;&#x2F;del&gt;
+➝ &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;yudejp&#x2F;yude.jp_v2&#x2F;commit&#x2F;3d45db22f91276112bca2ed1eeab27c4c16d7de1&quot;&gt;修正しました。&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;よろしゅう。&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>
